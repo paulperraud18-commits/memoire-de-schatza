@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schatza — Mémoire</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --ink:    #1e1a14;
+  --ink2:   #4a4236;
+  --ink3:   #8a8070;
+  --paper:  #faf7f1;
+  --paper2: #f2ede3;
+  --paper3: #e8e0d2;
+  --line:   rgba(30,26,20,0.10);
+  --line2:  rgba(30,26,20,0.18);
+  --terr:   #8b3a1e;
+  --terr2:  #c05030;
+  --terr-bg:#f6ebe4;
+  --sage:   #3d6b52;
+  --sage-bg:#e6eeea;
+  --ochre:  #8a6010;
+  --ochre-bg:#f5ecd6;
+  --gold:   #c8901a;
+  --serif:  'Lora', Georgia, serif;
+  --ui:     'DM Sans', system-ui, sans-serif;
+  --r:      10px;
+  --r2:     6px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ui);
+  background: var(--paper2);
+  color: var(--ink);
+  min-height: 100vh;
+}
+body.panic-med  { --paper2: #f0e8de; --paper: #fdf5ec; }
+body.panic-high { --paper2: #f5dfd0; --paper: #fef0e5; }
+body.panic-max  { --paper2: #f5cfc0; --paper: #fff0e8; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--paper2); }
+::-webkit-scrollbar-thumb { background: var(--paper3); border-radius: 2px; }
+
+/* ── PAGE SYSTEM ── */
+.view { display: none; min-height: 100vh; }
+.view.active { display: block; }
+
+/* ══════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════ */
+#view-home {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 24px;
+  background: var(--paper2);
+  position: relative;
+  overflow: hidden;
+}
+#view-home.active { display: flex; flex-direction: column; }
+
+.home-bg-text {
+  position: absolute;
+  font-family: var(--serif);
+  font-size: 18vw;
+  font-weight: 600;
+  color: rgba(30,26,20,0.025);
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) rotate(-8deg);
+  letter-spacing: -2px;
+}
+
+.home-inner {
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+  z-index: 1;
+}
+
+.home-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.home-header .home-eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.home-header h1 {
+  font-family: var(--serif);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+.home-header h1 em { font-style: italic; color: var(--terr); }
+.home-header p {
+  font-size: 15px;
+  color: var(--ink3);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.home-card {
+  background: var(--paper);
+  border: 1px solid var(--line2);
+  border-radius: 16px;
+  padding: 40px 36px 36px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.home-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  transition: opacity 0.2s;
+}
+.home-card.card-schatza::before { background: linear-gradient(90deg, var(--terr), var(--gold)); }
+.home-card.card-grimoire::before { background: linear-gradient(90deg, var(--sage), var(--ochre)); }
+
+.home-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(30,26,20,0.10);
+}
+
+.card-emoji {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.card-tag {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.card-schatza .card-tag { color: var(--terr); }
+.card-grimoire .card-tag { color: var(--sage); }
+
+.card-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.card-desc {
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.card-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.card-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink2);
+}
+.card-item .ci-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.card-schatza .ci-dot { background: var(--terr); }
+.card-grimoire .ci-dot { background: var(--sage); }
+
+.card-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--ui);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.3px;
+}
+.card-schatza .card-btn {
+  background: var(--ink);
+  color: var(--paper);
+}
+.card-schatza .card-btn:hover { background: var(--terr); }
+.card-grimoire .card-btn {
+  background: var(--sage);
+  color: #fff;
+}
+.card-grimoire .card-btn:hover { background: var(--sage2, #2e5040); }
+
+/* ── HOME XP STRIP ── */
+.home-xp-strip {
+  margin-top: 28px;
+  text-align: center;
+}
+.home-xp-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--paper);
+  border: 1px solid var(--line2);
+  border-radius: 40px;
+  padding: 10px 22px;
+}
+.hx-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--terr);
+  color: #fff;
+  font-family: var(--serif);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; flex-shrink: 0;
+}
+.hx-role { font-size: 12px; font-weight: 500; color: var(--ink2); }
+.hx-bar-wrap { width: 120px; height: 5px; background: var(--paper3); border-radius: 3px; overflow: hidden; }
+.hx-bar { height: 100%; background: linear-gradient(90deg, var(--terr), var(--gold)); border-radius: 3px; transition: width .5s ease; }
+.hx-pct { font-size: 11px; color: var(--ink3); }
+
+/* ══════════════════════════════════════════════
+   INNER LAYOUT (shared for both arborescences)
+══════════════════════════════════════════════ */
+.inner-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── MINI SIDEBAR ── */
+.mini-sidebar {
+  width: 220px;
+  background: var(--ink);
+  min-height: 100vh;
+  position: fixed;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  transition: transform .3s ease;
+}
+.ms-top {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.ms-back {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  margin-bottom: 14px;
+  transition: color .15s;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.ms-back:hover { color: rgba(255,255,255,0.8); }
+.ms-title {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ms-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+.ms-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+.ms-group {
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.22); padding: 12px 18px 4px; font-weight: 500;
+}
+.ms-btn {
+  width: 100%; display: flex; align-items: center; gap: 9px;
+  padding: 9px 18px; background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.5); font-size: 13px; font-family: var(--ui);
+  text-align: left; transition: all .15s; border-left: 2px solid transparent;
+  font-weight: 400;
+}
+.ms-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+.ms-btn.active { color: #fff; border-left-color: var(--terr2); background: rgba(139,58,30,0.15); }
+.ms-btn.active-sage { color: #fff; border-left-color: #6ab890; background: rgba(61,107,82,0.15); }
+.ms-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+
+.ms-footer { padding: 12px 18px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 10px; color: rgba(255,255,255,0.18); line-height: 1.6; }
+
+/* ── INNER MAIN ── */
+.inner-main { margin-left: 220px; flex: 1; min-height: 100vh; }
+
+/* ── PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  padding: 44px 48px 32px;
+  border-bottom: 1px solid var(--line2);
+  background: var(--paper);
+  position: relative; overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute; right: -30px; top: -30px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle,rgba(139,58,30,0.05) 0%,transparent 70%);
+  pointer-events: none;
+}
+.hero-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--terr); font-weight: 500; margin-bottom: 10px;
+}
+.hero-chip.sage { color: var(--sage); }
+.hero-chip::before { content: ''; width: 14px; height: 1.5px; background: currentColor; opacity: .5; }
+.hero h1 { font-family: var(--serif); font-size: clamp(20px,3vw,34px); font-weight: 600; line-height: 1.2; color: var(--ink); max-width: 560px; margin-bottom: 8px; }
+.hero h1 em { font-style: italic; color: var(--terr); }
+.hero p { font-size: 14px; color: var(--ink2); max-width: 480px; line-height: 1.75; }
+
+/* ── CONTENT ── */
+.content { padding: 36px 48px; max-width: 860px; }
+
+/* ── SECTION ── */
+.sec { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; margin-top: 32px; }
+.sec:first-child { margin-top: 0; }
+.sec-line { flex: 1; height: 1px; background: var(--line2); }
+.sec-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--terr); font-weight: 500; white-space: nowrap; }
+.sec-label.sage { color: var(--sage); }
+
+/* ── CARD ── */
+.card { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 20px 24px; margin-bottom: 12px; }
+.card.terr { border-left: 3px solid var(--terr); background: var(--terr-bg); }
+.card.sage  { border-left: 3px solid var(--sage);  background: var(--sage-bg); }
+.card.ochre { border-left: 3px solid var(--ochre); background: var(--ochre-bg); }
+.card h3 { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 10px; line-height: 1.3; }
+.card h4 { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.card p { font-size: 14px; line-height: 1.8; color: var(--ink2); margin-bottom: 8px; }
+.card p:last-child { margin-bottom: 0; }
+.card p strong { color: var(--ink); font-weight: 500; }
+
+/* ── GRID ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+/* ── BTN ── */
+.btn { border: none; border-radius: var(--r2); padding: 10px 20px; font-size: 13px; font-family: var(--ui); cursor: pointer; font-weight: 500; transition: opacity .15s; }
+.btn:hover { opacity: .85; }
+.btn-terr { background: var(--terr); color: #fff; }
+.btn-sage  { background: var(--sage);  color: #fff; }
+.btn-ochre { background: var(--ochre); color: #fff; }
+.btn-ink   { background: var(--ink);   color: #fff; }
+
+/* ── PQUOTE ── */
+.pquote { padding: 18px 22px; border-left: 3px solid var(--terr); background: var(--terr-bg); border-radius: 0 var(--r) var(--r) 0; margin: 14px 0; }
+.pquote p { font-family: var(--serif); font-size: 17px; font-style: italic; color: var(--ink); line-height: 1.6; margin-bottom: 6px; }
+.pquote .src { font-size: 10px; color: var(--ink3); }
+.pquote .tr { font-size: 13px; color: var(--ink2); margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(139,58,30,0.18); line-height: 1.7; }
+.pquote .tr-lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--terr); font-weight: 600; display: block; margin-bottom: 3px; }
+
+/* ── LIST ── */
+ul.dlist { list-style: none; padding: 0; }
+ul.dlist li { font-size: 14px; line-height: 1.75; color: var(--ink2); padding: 7px 0 7px 18px; position: relative; border-bottom: 1px solid var(--line); }
+ul.dlist li:last-child { border-bottom: none; }
+ul.dlist li::before { content: "—"; position: absolute; left: 0; color: var(--terr); font-size: 12px; top: 9px; }
+ul.dlist li strong { color: var(--ink); font-weight: 500; }
+
+/* ── STATS ── */
+.stats { display: flex; gap: 10px; margin-bottom: 12px; }
+.stat { flex: 1; border-radius: var(--r); padding: 18px 14px; text-align: center; border: 1px solid var(--line2); }
+.stat.s-t { background: var(--terr); border-color: var(--terr); }
+.stat.s-s { background: var(--sage); border-color: var(--sage); }
+.stat.s-n { background: var(--paper); border-color: var(--line2); }
+.stat .n { font-family: var(--serif); font-size: 34px; font-weight: 600; line-height: 1; display: block; margin-bottom: 4px; }
+.stat.s-t .n, .stat.s-s .n { color: #fff; }
+.stat.s-n .n { color: var(--terr); }
+.stat .l { font-size: 11px; line-height: 1.45; }
+.stat.s-t .l, .stat.s-s .l { color: rgba(255,255,255,0.65); }
+.stat.s-n .l { color: var(--ink3); }
+
+/* ── DTABLE ── */
+.dtable { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px; }
+.dtable thead th { background: var(--ink); color: #fff; padding: 9px 13px; text-align: left; font-weight: 500; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; }
+.dtable tbody td { padding: 10px 13px; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink2); line-height: 1.6; }
+.dtable tbody tr:hover td { background: var(--paper2); }
+.dtable tbody td:first-child { color: var(--ink); font-weight: 500; }
+.notif { background: var(--ochre-bg); border: 1px solid rgba(138,96,16,0.25); border-radius: 4px; padding: 10px 14px; font-size: 13px; color: var(--ink2); margin-bottom: 10px; line-height: 1.6; }
+
+/* ── IBLOCK ── */
+.iblock { border: 1px solid var(--line2); border-radius: var(--r); overflow: hidden; margin-bottom: 10px; }
+.iblock-h { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: var(--paper2); cursor: pointer; transition: background .15s; }
+.iblock-h:hover { background: var(--paper3); }
+.iblock-h.open { background: var(--ink); }
+.iblock-h.open .iblock-title, .iblock-h.open .iblock-arr { color: rgba(255,255,255,0.7); }
+.iblock-tag { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--terr); font-weight: 600; background: var(--terr-bg); padding: 3px 8px; border-radius: 3px; flex-shrink: 0; }
+.iblock-h.open .iblock-tag { background: rgba(240,160,120,0.2); color: #f0a080; }
+.iblock-title { font-size: 14px; color: var(--ink); flex: 1; margin: 0 12px; }
+.iblock-arr { font-size: 9px; color: var(--ink3); transition: transform .2s; }
+.iblock-h.open .iblock-arr { transform: rotate(180deg); }
+.iblock-b { display: none; padding: 16px 18px; background: var(--paper); }
+.iblock-b.open { display: block; }
+.q-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.q-col label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); font-weight: 500; display: block; margin-bottom: 6px; }
+.q-item { background: var(--paper2); border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; font-size: 13px; color: var(--ink2); line-height: 1.6; margin-bottom: 5px; }
+
+/* ── FLOWBAR ── */
+.flowbar { display: flex; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; }
+.fb-node { flex: 1; padding: 12px 8px; text-align: center; border-right: 1px solid var(--line2); }
+.fb-node:last-child { border-right: none; }
+.fb-node .fb-l { font-size: 12px; font-weight: 500; color: var(--ink); display: block; }
+.fb-node .fb-s { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+.fb-node.act { background: var(--terr); }
+.fb-node.act .fb-l { color: #fff; }
+.fb-node.act .fb-s { color: rgba(255,255,255,0.6); }
+
+/* ── PANIC ── */
+.panic-wrap { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 20px 24px; margin-bottom: 12px; }
+.panic-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.panic-top span { font-size: 13px; color: var(--ink2); }
+.panic-val { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--terr); }
+.panic-emojis { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink3); margin-top: 5px; }
+input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
+
+/* ── CITATION BOX ── */
+.citation-box { background: var(--terr-bg); border: 1px solid rgba(139,58,30,0.18); border-radius: var(--r); padding: 20px 24px; margin-bottom: 12px; }
+.citation-text { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--ink); line-height: 1.6; margin-bottom: 14px; min-height: 48px; transition: opacity .3s; }
+
+/* ── JPP ── */
+.jpp-wrap { text-align: center; padding: 28px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); margin-bottom: 12px; }
+.jpp-btn { background: var(--terr); color: #fff; border: none; border-radius: 8px; padding: 14px 32px; font-size: 16px; cursor: pointer; font-family: var(--serif); font-style: italic; font-weight: 600; transition: all .2s; }
+.jpp-btn:hover { transform: scale(1.04); }
+.jpp-msg { font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--terr); margin-top: 14px; min-height: 22px; transition: opacity .4s; opacity: 0; }
+.jpp-msg.show { opacity: 1; }
+
+/* ── WHEEL ── */
+.wheel-wrap { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 22px; text-align: center; margin-bottom: 12px; }
+.wheel-result { font-family: var(--serif); font-size: 17px; font-style: italic; color: var(--ink); min-height: 40px; margin-bottom: 14px; line-height: 1.4; transition: opacity .3s; }
+
+/* ── VICTOIRES ── */
+.vict-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.vict-row input { flex: 1; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r2); padding: 9px 13px; font-size: 13px; color: var(--ink); font-family: var(--ui); }
+.vict-row input:focus { outline: none; border-color: var(--sage); }
+.victoire-list { display: flex; flex-direction: column; gap: 6px; }
+.victoire-item { display: flex; align-items: center; gap: 10px; background: var(--sage-bg); border: 1px solid rgba(61,107,82,0.2); border-radius: var(--r2); padding: 10px 14px; font-size: 13px; color: var(--ink2); }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.victoire-item { animation: fadeUp .3s ease both; }
+.vi-del { margin-left: auto; font-size: 11px; color: var(--ink3); cursor: pointer; opacity: .6; }
+.vi-del:hover { color: var(--terr); opacity: 1; }
+
+/* ── SECRETS ── */
+.secret-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.secret-env { background: var(--ochre-bg); border: 1px solid rgba(138,96,16,0.25); border-radius: var(--r); padding: 16px; text-align: center; cursor: pointer; transition: all .2s; user-select: none; }
+.secret-env:hover { border-color: var(--ochre); transform: scale(1.02); }
+.secret-env.opened { background: var(--sage-bg); border-color: rgba(61,107,82,0.3); cursor: default; }
+.se-icon { font-size: 26px; display: block; margin-bottom: 6px; }
+.se-label { font-size: 11px; color: var(--ink3); }
+.se-msg { font-family: var(--serif); font-size: 12px; font-style: italic; color: var(--ink2); line-height: 1.55; display: none; margin-top: 8px; text-align: left; }
+.secret-env.opened .se-msg { display: block; }
+.secret-env.opened .se-label { font-weight: 600; color: var(--sage); }
+
+/* ── COUNTDOWN ── */
+.cd-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 8px; }
+.cd-cell { background: var(--ink); color: #fff; border-radius: var(--r); padding: 16px 8px; text-align: center; }
+.cd-num { font-family: var(--serif); font-size: 30px; font-weight: 600; display: block; line-height: 1; }
+.cd-lab { font-size: 9px; color: rgba(255,255,255,0.4); margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.cd-drama { font-family: var(--serif); font-size: 14px; font-style: italic; color: var(--terr); text-align: center; padding: 8px 0; }
+.date-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.date-row label { font-size: 12px; color: var(--ink3); }
+.date-row input { border: 1px solid var(--line2); border-radius: var(--r2); padding: 7px 11px; font-size: 13px; font-family: var(--ui); background: var(--paper2); color: var(--ink); }
+
+/* ── POMODORO ── */
+.pomodoro { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 26px; text-align: center; margin-bottom: 12px; }
+.pomo-mode { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+.pomo-display { font-family: var(--serif); font-size: 56px; font-weight: 600; color: var(--ink); line-height: 1; margin-bottom: 14px; }
+.pomo-btns { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.pomo-sessions { font-size: 11px; color: var(--ink3); }
+.pomo-msg { font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--terr); margin-top: 8px; min-height: 18px; }
+
+/* ── TODO ── */
+.todo-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.todo-row input { flex: 1; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r2); padding: 9px 13px; font-size: 13px; color: var(--ink); font-family: var(--ui); }
+.todo-row input:focus { outline: none; border-color: var(--sage); }
+.todo-list { display: flex; flex-direction: column; gap: 6px; }
+.todo-item { display: flex; align-items: center; gap: 10px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r2); padding: 10px 14px; cursor: pointer; transition: all .2s; user-select: none; }
+.todo-item:hover { border-color: var(--sage); }
+.todo-item.done { background: var(--sage-bg); border-color: rgba(61,107,82,0.3); }
+.todo-item.done .ti-txt { text-decoration: line-through; color: var(--sage); }
+.todo-cb { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line2); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; background: var(--paper2); color: transparent; }
+.todo-item.done .todo-cb { background: var(--sage); border-color: var(--sage); color: #fff; }
+.ti-txt { flex: 1; font-size: 13px; color: var(--ink2); }
+.ti-del { font-size: 11px; color: var(--ink3); opacity: .5; cursor: pointer; flex-shrink: 0; }
+.ti-del:hover { color: var(--terr); opacity: 1; }
+
+/* ── PAUL ── */
+.paul-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.paul-card { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.paul-card h4 { font-size: 14px; font-weight: 600; color: var(--ink); }
+.paul-card p { font-size: 12px; color: var(--ink3); line-height: 1.5; flex: 1; }
+.paul-ordered { font-size: 12px; color: var(--sage); font-weight: 500; display: none; }
+
+/* ── FLOWER ── */
+.flower-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 26px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); margin-bottom: 12px; text-align: center; }
+.flower-svg { transition: transform .4s ease; }
+.flower-name { font-family: var(--serif); font-size: 20px; font-weight: 600; color: var(--terr); }
+.flower-desc { font-size: 13px; color: var(--ink3); line-height: 1.6; max-width: 280px; }
+.flower-progress { width: 100%; max-width: 280px; }
+
+/* ── STREAK ── */
+.streak-box { display: flex; align-items: center; gap: 16px; padding: 20px 22px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); margin-bottom: 12px; }
+.streak-num { font-family: var(--serif); font-size: 48px; font-weight: 600; color: var(--terr); line-height: 1; flex-shrink: 0; }
+.streak-info h4 { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+.streak-info p { font-size: 12px; color: var(--ink3); line-height: 1.5; }
+.streak-fire { font-size: 30px; }
+
+/* ── CITATIONS BOARD ── */
+.citations-board { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+.cit-row { display: flex; align-items: center; gap: 12px; padding: 11px 16px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r2); transition: border-color .15s; }
+.cit-row:hover { border-color: var(--terr); }
+.cit-txt { flex: 1; font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--ink2); line-height: 1.5; }
+.cit-heart { font-size: 17px; cursor: pointer; flex-shrink: 0; transition: transform .2s; user-select: none; }
+.cit-heart:hover { transform: scale(1.3); }
+.cit-heart.loved { color: var(--terr); }
+
+/* ── REWARDS ── */
+.reward-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 9px; margin-bottom: 12px; }
+.reward-badge { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 14px 10px; text-align: center; }
+.reward-badge.unlocked { background: var(--ochre-bg); border-color: rgba(200,144,26,0.35); }
+.reward-badge.locked { opacity: .4; filter: grayscale(1); }
+.rb-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+.rb-name { font-size: 11px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+.rb-desc { font-size: 10px; color: var(--ink3); line-height: 1.3; }
+
+/* ── TOAST & EASTER EGG ── */
+#surprise-toast { position: fixed; top: 20px; right: 20px; z-index: 300; background: var(--paper); border: 1.5px solid var(--terr); border-radius: var(--r); padding: 14px 18px; max-width: 270px; box-shadow: 0 6px 24px rgba(139,58,30,0.14); display: none; animation: toastIn .4s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes toastIn { from { opacity:0; transform:translateY(-14px) scale(0.9); } to { opacity:1; transform:none; } }
+.toast-head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+.toast-icon { font-size: 18px; }
+.toast-from { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--terr); }
+.toast-msg { font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--ink); line-height: 1.55; }
+.toast-close { position: absolute; top: 8px; right: 10px; font-size: 11px; color: var(--ink3); cursor: pointer; }
+
+#easter-egg { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(250,247,241,0.97); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+.egg-inner { animation: eggPop .5s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes eggPop { from { opacity:0; transform:scale(0.5) rotate(-6deg); } to { opacity:1; transform:none; } }
+.egg-img { width: 180px; border-radius: 14px; margin-bottom: 22px; box-shadow: 0 14px 40px rgba(139,58,30,0.18); }
+.egg-title { font-family: var(--serif); font-size: 32px; font-weight: 600; color: var(--terr); margin-bottom: 10px; }
+.egg-msg { font-size: 15px; color: var(--ink2); max-width: 380px; line-height: 1.75; }
+.egg-hint { font-size: 11px; color: var(--ink3); margin-top: 12px; }
+
+/* ── CONFETTI ── */
+.confetti-piece { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 9999; animation: confettiFall 1.4s ease-in forwards; }
+@keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity:1; } 100% { transform: translateY(100vh) rotate(720deg); opacity:0; } }
+
+/* ── SAVE INDICATOR ── */
+#save-indicator { position: fixed; bottom: 14px; left: 14px; font-size: 10px; color: var(--ink3); background: var(--paper); border: 1px solid var(--line2); border-radius: 4px; padding: 4px 10px; opacity: 0; transition: opacity .3s; z-index: 100; pointer-events: none; }
+
+/* ── MOBILE ── */
+#mb-toggle { display: none; position: fixed; top: 14px; left: 14px; z-index: 200; background: var(--terr); border: none; color: #fff; border-radius: var(--r2); width: 36px; height: 36px; cursor: pointer; font-size: 14px; align-items: center; justify-content: center; }
+#mb-overlay { display: none; position: fixed; inset: 0; background: rgba(30,26,20,0.4); z-index: 40; }
+
+@media (max-width: 800px) {
+  .mini-sidebar { transform: translateX(-100%); }
+  .mini-sidebar.open { transform: none; }
+  #mb-toggle { display: flex; }
+  #mb-overlay.show { display: block; }
+  .inner-main { margin-left: 0; }
+  .hero { padding: 52px 22px 28px; }
+  .content { padding: 24px 22px; }
+  .home-cards { grid-template-columns: 1fr; }
+  .g2, .g3, .paul-grid, .secret-grid, .reward-grid { grid-template-columns: 1fr 1fr; }
+  .stats { flex-wrap: wrap; }
+  .flowbar { flex-direction: column; }
+  .cd-grid { grid-template-columns: repeat(2,1fr); }
+  .pomo-btns { flex-wrap: wrap; }
+  .q-row { grid-template-columns: 1fr; }
+}
+
+.page.active .content > * { animation: fadeUp .3s ease both; }
+.page.active .content > *:nth-child(1){animation-delay:.03s}
+.page.active .content > *:nth-child(2){animation-delay:.07s}
+.page.active .content > *:nth-child(3){animation-delay:.11s}
+.page.active .content > *:nth-child(4){animation-delay:.15s}
+.page.active .content > *:nth-child(5){animation-delay:.19s}
+.page.active .content > *:nth-child(6){animation-delay:.23s}
+.page.active .content > *:nth-child(7){animation-delay:.27s}
+
+/* ── SÉANCES ── */
+.seance-step { display: none; }
+.seance-step.active { display: block; }
+
+.step-indicator {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 28px;
+}
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--line2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--ink3);
+  background: var(--paper); flex-shrink: 0; transition: all .3s;
+}
+.step-dot.done  { background: var(--sage);  border-color: var(--sage);  color: #fff; }
+.step-dot.active{ background: var(--terr);  border-color: var(--terr);  color: #fff; }
+.step-line { flex: 1; height: 2px; background: var(--line2); transition: background .3s; }
+.step-line.done { background: var(--sage); }
+
+.seance-card {
+  background: var(--paper);
+  border: 1px solid var(--line2);
+  border-radius: var(--r);
+  padding: 28px 32px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.seance-card h3 {
+  font-family: var(--serif); font-size: 20px; font-weight: 600;
+  color: var(--ink); margin-bottom: 6px;
+}
+.seance-card .sc-sub { font-size: 13px; color: var(--ink3); margin-bottom: 24px; line-height: 1.5; }
+
+.obj-input {
+  width: 100%; background: var(--paper2);
+  border: 1.5px solid var(--line2); border-radius: var(--r2);
+  padding: 12px 16px; font-size: 15px; color: var(--ink);
+  font-family: var(--serif); font-style: italic;
+  text-align: center; margin-bottom: 20px;
+  transition: border-color .15s;
+}
+.obj-input:focus { outline: none; border-color: var(--terr); }
+
+.stress-label-row {
+  display: flex; justify-content: space-between;
+  font-size: 11px; color: var(--ink3); margin-bottom: 6px;
+}
+.stress-val-display {
+  font-family: var(--serif); font-size: 22px; font-weight: 600;
+  color: var(--terr); margin-bottom: 8px;
+}
+.stress-section { margin-bottom: 22px; text-align: left; }
+.stress-section label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--ink3); display: block; margin-bottom: 8px;
+}
+
+/* CHRONO */
+.chrono-display {
+  font-family: var(--serif); font-size: 72px; font-weight: 400;
+  color: var(--ink); line-height: 1; letter-spacing: -2px;
+  margin: 16px 0 8px;
+}
+.chrono-display.paused { color: var(--ink3); }
+.chrono-obj-label {
+  font-family: var(--serif); font-size: 15px; font-style: italic;
+  color: var(--ink2); margin-bottom: 20px; line-height: 1.5;
+  padding: 10px 16px; background: var(--terr-bg);
+  border-radius: var(--r2); border-left: 3px solid var(--terr);
+  text-align: left;
+}
+.chrono-btns { display: flex; gap: 10px; justify-content: center; margin-bottom: 14px; }
+.chrono-status {
+  font-size: 11px; color: var(--ink3); letter-spacing: 1px;
+  text-transform: uppercase; margin-top: 8px;
+}
+
+/* NOTE FINALE */
+.note-textarea {
+  width: 100%; background: var(--paper2);
+  border: 1.5px solid var(--line2); border-radius: var(--r2);
+  padding: 12px 16px; font-size: 14px; color: var(--ink);
+  font-family: var(--ui); resize: vertical; min-height: 90px;
+  margin-bottom: 16px; transition: border-color .15s;
+}
+.note-textarea:focus { outline: none; border-color: var(--sage); }
+
+/* HISTORIQUE */
+.history-empty {
+  text-align: center; padding: 40px 20px;
+  font-family: var(--serif); font-size: 16px;
+  font-style: italic; color: var(--ink3);
+}
+.history-item {
+  background: var(--paper); border: 1px solid var(--line2);
+  border-radius: var(--r); padding: 16px 20px;
+  margin-bottom: 10px; transition: border-color .15s;
+}
+.history-item:hover { border-color: var(--terr); }
+.hi-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px; margin-bottom: 10px;
+}
+.hi-obj {
+  font-family: var(--serif); font-size: 15px; font-weight: 600;
+  color: var(--ink); line-height: 1.35; flex: 1;
+}
+.hi-date { font-size: 11px; color: var(--ink3); flex-shrink: 0; margin-top: 2px; }
+.hi-meta {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.hi-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 500; padding: 3px 10px;
+  border-radius: 20px; border: 1px solid;
+}
+.hi-badge.duration { background: var(--ochre-bg); color: var(--ochre); border-color: rgba(138,96,16,0.25); }
+.hi-badge.stress-in { background: var(--terr-bg); color: var(--terr); border-color: rgba(139,58,30,0.2); }
+.hi-badge.stress-out { background: var(--sage-bg); color: var(--sage); border-color: rgba(61,107,82,0.2); }
+.hi-note {
+  font-size: 13px; color: var(--ink3); font-style: italic;
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--line); line-height: 1.55;
+}
+.hi-del {
+  font-size: 11px; color: var(--ink3); cursor: pointer;
+  opacity: .5; flex-shrink: 0; margin-top: 2px;
+}
+.hi-del:hover { color: var(--terr); opacity: 1; }
+
+.history-stats {
+  display: flex; gap: 10px; margin-bottom: 16px;
+}
+.hs-box {
+  flex: 1; background: var(--paper); border: 1px solid var(--line2);
+  border-radius: var(--r); padding: 14px; text-align: center;
+}
+.hs-num { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--terr); display: block; }
+.hs-lbl { font-size: 10px; color: var(--ink3); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<button id="mb-toggle" onclick="mbToggle()">&#9776;</button>
+<div id="mb-overlay" onclick="mbToggle()"></div>
+<div id="save-indicator">&#10003; Sauvegardé</div>
+
+<!-- TOAST -->
+<div id="surprise-toast">
+  <div class="toast-head"><span class="toast-icon">💌</span><span class="toast-from">Message de Paul</span></div>
+  <div class="toast-msg" id="toast-msg"></div>
+  <span class="toast-close" onclick="document.getElementById('surprise-toast').style.display='none'">&#10005;</span>
+</div>
+
+<!-- EASTER EGG -->
+<div id="easter-egg" onclick="this.style.display='none'">
+  <div class="egg-inner">
+    <img class="egg-img" src="https://upload.wikimedia.org/wikipedia/en/3/3b/Mr_Potato_Head_toy.jpg" alt="Monsieur Patate"/>
+    <div class="egg-title">🥔 Félicitations Schatza !</div>
+    <div class="egg-msg">Le mémoire est terminé !<br>Monsieur Patate est fier de toi.<br><strong>Dr. Schatza, Experte CBM.</strong></div>
+    <div class="egg-hint">Clique n'importe où pour fermer</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     HOME
+═══════════════════════════════════ -->
+<div class="view active" id="view-home">
+  <div class="home-bg-text">Mémoire</div>
+  <div class="home-inner">
+    <div class="home-header">
+      <div class="home-eyebrow">Mémoire de Schatza</div>
+      <h1>Ton espace<br><em>de recherche</em></h1>
+      <p>Deux parties : une pour t'organiser et te motiver et une autre pour que je puisse comprendre mieux sur quoi tu travailles.</p>
+    </div>
+
+    <div class="home-cards">
+      <div class="home-card card-schatza" onclick="openSection('schatza')">
+        <span class="card-emoji">🌸</span>
+        <span class="card-tag">Ton espace</span>
+        <div class="card-title">Espace Schatza</div>
+        <div class="card-desc">Tout ce dont tu as besoin pour survivre à la rédaction — et même l'apprécier.</div>
+        <div class="card-items">
+          <div class="card-item"><span class="ci-dot"></span>Espace survie — citations, panicomètre, JPP</div>
+          <div class="card-item"><span class="ci-dot"></span>Séances de travail</div>
+          <div class="card-item"><span class="ci-dot"></span>Fleur, streak & récompenses</div>
+          <div class="card-item"><span class="ci-dot"></span>Commande ton Paul 🍕</div>
+        </div>
+        <button class="card-btn">Entrer dans mon espace →</button>
+      </div>
+
+      <div class="home-card card-grimoire" onclick="openSection('grimoire')">
+        <span class="card-emoji">📖</span>
+        <span class="card-tag">Le mémoire</span>
+        <div class="card-title">Espace schatzi</div>
+        <div class="card-desc">Le contenu documentaire de la recherche — tomes, guide d'entretien et bibliographie.</div>
+        <div class="card-items">
+          <div class="card-item"><span class="ci-dot"></span>État de la recherche (ch. 5)</div>
+          <div class="card-item"><span class="ci-dot"></span>Questions de recherche (ch. 7)</div>
+          <div class="card-item"><span class="ci-dot"></span>Méthodologie (ch. 8)</div>
+          <div class="card-item"><span class="ci-dot"></span>Guide d'entretien & Bibliographie</div>
+        </div>
+        <button class="card-btn">Ouvrir le grimoire →</button>
+      </div>
+    </div>
+
+    <div class="home-xp-strip">
+      <div class="home-xp-inner">
+        <div class="hx-avatar">S</div>
+        <span class="hx-role" id="hx-role">Apprentie chercheuse · Niv. 1</span>
+        <div class="hx-bar-wrap"><div class="hx-bar" id="hx-bar" style="width:0%"></div></div>
+        <span class="hx-pct" id="hx-pct">0%</span>
+        <span style="font-size:18px;" id="hx-streak-fire">🌱</span>
+        <span style="font-size:11px;color:var(--ink3);" id="hx-streak-num">0 🔥</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     SECTION SCHATZA
+═══════════════════════════════════ -->
+<div class="view" id="view-schatza">
+  <div class="inner-layout">
+    <aside class="mini-sidebar" id="sidebar-schatza">
+      <div class="ms-top">
+        <div class="ms-back" onclick="goHome()">← Accueil</div>
+        <div class="ms-title">Espace Schatza 🌸</div>
+        <div class="ms-sub">Survie & organisation</div>
+      </div>
+      <div class="ms-nav">
+        <div class="ms-group">Survie</div>
+        <button class="ms-btn active" onclick="showPage('survie','schatza')"><span class="ms-icon">🆘</span>Espace survie</button>
+        <button class="ms-btn" onclick="showPage('seances','schatza')"><span class="ms-icon">⏱️</span>Séances de travail</button>
+        <button class="ms-btn" onclick="showPage('paul','schatza')"><span class="ms-icon">🍕</span>Commande ton Paul</button>
+        <div class="ms-group">Bonus</div>
+        <button class="ms-btn" onclick="showPage('extras','schatza')"><span class="ms-icon">🌸</span>Fleur & Extras</button>
+      </div>
+      <div class="ms-footer">Mémoire de Schatza</div>
+    </aside>
+    <div class="inner-main">
+
+      <!-- SURVIE -->
+      <div class="page active" id="page-survie">
+        <div class="hero"><div class="hero-chip">Espace survie</div><h1>Schatza, <em>tu gères</em> 💪</h1><p>Ton kit émotionnel. Panicomètre, citations, bouton d'urgence et micro-victoires.</p></div>
+        <div class="content">
+          <div class="sec"><div class="sec-label">🎯 Panicomètre</div><div class="sec-line"></div></div>
+          <div class="panic-wrap">
+            <div class="panic-top"><span>Niveau de panique actuel</span><span class="panic-val" id="panic-val">😌 Zen (3/10)</span></div>
+            <input type="range" min="0" max="10" value="3" id="panic-slider" oninput="updatePanic(this.value)"/>
+            <div class="panic-emojis"><span>😌 Zen</span><span>😤 Tendue</span><span>😰 Panique</span><span>🔥 AAAH</span></div>
+          </div>
+          <div class="sec"><div class="sec-label">💬 Citations de survie</div><div class="sec-line"></div></div>
+          <div class="citation-box">
+            <div class="citation-text" id="citation-text">« Chaque page écrite est une page de moins à écrire. »</div>
+            <button class="btn btn-terr" id="citation-btn">🎲 Nouvelle citation</button>
+          </div>
+          <div class="sec"><div class="sec-label">😤 Bouton d'urgence</div><div class="sec-line"></div></div>
+          <div class="jpp-wrap">
+            <button class="jpp-btn" id="jpp-btn">J'EN PEUX PLUS</button>
+            <div class="jpp-msg" id="jpp-msg"></div>
+          </div>
+          <div class="sec"><div class="sec-label">🎲 Que faire quand je procrastine ?</div><div class="sec-line"></div></div>
+          <div class="wheel-wrap">
+            <div class="wheel-result" id="wheel-result">Clique pour savoir ce que tu dois faire au lieu de procrastiner…</div>
+            <button class="btn btn-ochre" id="wheel-btn">🎲 Tourner la roue</button>
+          </div>
+          <div class="sec"><div class="sec-label">🏆 Micro-victoires</div><div class="sec-line"></div></div>
+          <div class="vict-row">
+            <input type="text" id="victoire-input" placeholder="J'ai écrit 3 lignes et c'était beau ✨" maxlength="80"/>
+            <button class="btn btn-sage" id="victoire-btn">Ajouter 🎉</button>
+          </div>
+          <div class="victoire-list" id="victoire-list">
+            <div class="victoire-item"><span style="font-size:16px;">⭐</span><span style="flex:1;">J'ai ouvert le document (ça compte)</span><span class="vi-del">✕</span></div>
+          </div>
+          <div class="sec"><div class="sec-label">💌 Messages secrets de Paul</div><div class="sec-line"></div></div>
+          <div class="secret-grid">
+            <div class="secret-env" id="sec0"><span class="se-icon">💌</span><div class="se-label">Message #1</div><div class="se-msg">Même les jours où tu n'as écrit qu'une virgule — tu avances. Je suis là. 🧡</div></div>
+            <div class="secret-env" id="sec1"><span class="se-icon">💌</span><div class="se-label">Message #2</div><div class="se-msg">Ton mémoire parle de la musique comme langage. Toi aussi tu as un langage unique — et il est magnifique. ✨</div></div>
+            <div class="secret-env" id="sec2"><span class="se-icon">💌</span><div class="se-label">Message #3</div><div class="se-msg">Pose l'ordinateur. Bois de l'eau. Dors. Le mémoire sera encore là demain — toi aussi tu dois l'être. 🌙</div></div>
+            <div class="secret-env" id="sec3"><span class="se-icon">💌</span><div class="se-label">Message #4</div><div class="se-msg">TU VOIS ? Je te l'avais dit. Brillante. 🏆</div></div>
+            <div class="secret-env" id="sec4"><span class="se-icon">💌</span><div class="se-label">Message #5</div><div class="se-msg">À force de lire Meyer, tu le connais mieux que lui. C'est toi l'experte maintenant. 🎹</div></div>
+            <div class="secret-env" id="sec5"><span class="se-icon">💌</span><div class="se-label">Message #6</div><div class="se-msg">On fête ça comme il se doit. Fier de toi, Schatza. 🥔🎉</div></div>
+          </div>
+        </div>
+      </div>
+
+            <!-- SEANCES -->
+      <div class="page" id="page-seances">
+        <div class="hero"><div class="hero-chip">Séances de travail</div><h1>Travaille <em>à ton rythme</em></h1><p>Lance une séance, note ton objectif et ton niveau de stress. L'historique garde tout en mémoire.</p></div>
+        <div class="content">
+
+          <!-- STEP INDICATOR -->
+          <div class="step-indicator">
+            <div class="step-dot active" id="sdot-1">1</div>
+            <div class="step-line" id="sline-1"></div>
+            <div class="step-dot" id="sdot-2">2</div>
+            <div class="step-line" id="sline-2"></div>
+            <div class="step-dot" id="sdot-3">3</div>
+          </div>
+
+          <!-- STEP 1 : AVANT -->
+          <div class="seance-step active" id="seance-step-1">
+            <div class="seance-card">
+              <h3>Avant de commencer</h3>
+              <div class="sc-sub">Quel est ton objectif pour cette séance ?</div>
+              <input class="obj-input" type="text" id="seance-obj" placeholder="Ex : Rédiger l'intro du chapitre 3..." maxlength="100"/>
+              <div class="stress-section">
+                <label>Ton niveau de stress en ce moment</label>
+                <div class="stress-val-display" id="stress-in-val">😌 Zen (3/10)</div>
+                <input type="range" min="0" max="10" value="3" id="stress-in-slider" oninput="updateStressIn(this.value)" style="width:100%;"/>
+                <div class="stress-label-row"><span>😌 Zen</span><span>😤 Tendue</span><span>🔥 AAAH</span></div>
+              </div>
+              <button class="btn btn-terr" style="width:100%;padding:14px;font-size:15px;" onclick="startSeance()">▶ Démarrer la séance</button>
+            </div>
+
+            <!-- HISTORIQUE -->
+            <div class="sec"><div class="sec-label">📋 Historique des séances</div><div class="sec-line"></div></div>
+            <div class="history-stats" id="history-stats" style="display:none;">
+              <div class="hs-box"><span class="hs-num" id="hs-count">0</span><div class="hs-lbl">Séances</div></div>
+              <div class="hs-box"><span class="hs-num" id="hs-time">0h</span><div class="hs-lbl">Temps total</div></div>
+              <div class="hs-box"><span class="hs-num" id="hs-stress">—</span><div class="hs-lbl">Stress moyen sortie</div></div>
+            </div>
+            <div id="history-list"><div class="history-empty">Aucune séance encore. Lance ta première ! 🌱</div></div>
+          </div>
+
+          <!-- STEP 2 : PENDANT -->
+          <div class="seance-step" id="seance-step-2">
+            <div class="seance-card">
+              <h3>Séance en cours</h3>
+              <div class="chrono-obj-label" id="chrono-obj-display">—</div>
+              <div class="chrono-display" id="chrono-display">00:00:00</div>
+              <div class="chrono-status" id="chrono-status">En cours…</div>
+              <div class="chrono-btns" style="margin-top:20px;">
+                <button class="btn btn-ochre" id="chrono-pause-btn" onclick="togglePause()">⏸ Pause</button>
+                <button class="btn btn-terr" onclick="endSeance()">⏹ Terminer la séance</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3 : APRÈS -->
+          <div class="seance-step" id="seance-step-3">
+            <div class="seance-card">
+              <h3>Séance terminée 🎉</h3>
+              <div class="sc-sub" id="recap-duration">Durée : —</div>
+              <div class="stress-section">
+                <label>Ton niveau de stress maintenant</label>
+                <div class="stress-val-display" id="stress-out-val">😌 Zen (3/10)</div>
+                <input type="range" min="0" max="10" value="3" id="stress-out-slider" oninput="updateStressOut(this.value)" style="width:100%;"/>
+                <div class="stress-label-row"><span>😌 Zen</span><span>😤 Tendue</span><span>🔥 AAAH</span></div>
+              </div>
+              <div style="text-align:left; margin-bottom:4px;">
+                <label style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);">Note libre (optionnel)</label>
+              </div>
+              <textarea class="note-textarea" id="seance-note" placeholder="Comment ça s'est passé ? Qu'est-ce qui a bien marché ?"></textarea>
+              <button class="btn btn-sage" style="width:100%;padding:14px;font-size:15px;" onclick="saveSeance()">✓ Enregistrer la séance</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+<!-- PAUL -->
+      <div class="page" id="page-paul">
+        <div class="hero"><div class="hero-chip">Logistique amoureuse</div><h1>🍕 Commande <em>ton Paul</em></h1><p>Livraison express. Stocks illimités. Satisfait ou câliné.</p></div>
+        <div class="content">
+          <div class="paul-grid">
+            <div class="paul-card"><h4>☕ Café livré</h4><p>Un café chaud posé à côté de l'ordi sans bruit ni interruption.</p><button class="btn btn-terr paul-order-btn">Commander</button><div class="paul-ordered">✓ En route — dans 3 min ☕</div></div>
+            <div class="paul-card"><h4>🤫 Silence garanti</h4><p>Paul arrête d'exister bruyamment pendant 1h.</p><button class="btn btn-terr paul-order-btn">Activer</button><div class="paul-ordered">✓ Mode silence activé 🤫</div></div>
+            <div class="paul-card"><h4>🤗 Câlin sur demande</h4><p>Livraison physique d'un câlin réconfortant. Durée négociable.</p><button class="btn btn-terr paul-order-btn">Demander</button><div class="paul-ordered">✓ Viens ou j'arrive 🤗</div></div>
+            <div class="paul-card"><h4>🍕 Commande repas</h4><p>Paul gère la commande de A à Z. Tu choisis, il fait le reste.</p><button class="btn btn-terr paul-order-btn">Commander</button><div class="paul-ordered">✓ Dis-moi ce que tu veux 🍕</div></div>
+            <div class="paul-card"><h4>📖 Relecteur d'urgence</h4><p>Paul relit un paragraphe et dit "c'est bien" avec conviction totale. Ou alors il relit sérieusement et donne un avis sincère. À choisir selon le mood.</p><button class="btn btn-terr paul-order-btn">Demander</button><div class="paul-ordered">✓ Envoie-moi le paragraphe 📖</div></div>
+            <div class="paul-card"><h4>🎉 Célébration express</h4><p>Pour fêter une micro-victoire. Expression enthousiaste garantie.</p><button class="btn btn-terr paul-order-btn">Déclencher</button><div class="paul-ordered">✓ Dis-moi ce qu'on fête 🎉</div></div>
+          </div>
+          <div class="card ochre" style="text-align:center;"><p>⚠️ Service disponible dans un rayon de bonne volonté. Non remboursable mais toujours de bonne foi. D'autres services sont disponibles sur demande vocale.</p></div>
+        </div>
+      </div>
+
+      <!-- EXTRAS -->
+      <div class="page" id="page-extras">
+        <div class="hero"><div class="hero-chip">Extras</div><h1>Ton jardin <em>secret</em> 🌸</h1><p>Fleur, streak, citations favorites, défis communs et récompenses.</p></div>
+        <div class="content">
+          <div class="sec"><div class="sec-label">🌸 Fleur virtuelle</div><div class="sec-line"></div></div>
+          <div class="flower-stage">
+            <svg id="flower-svg" class="flower-svg" viewBox="0 0 120 160" width="120" height="160" xmlns="http://www.w3.org/2000/svg">
+              <g id="fl-0"><ellipse cx="60" cy="140" rx="18" ry="10" fill="#c8a870" opacity="0.5"/><ellipse cx="60" cy="138" rx="10" ry="7" fill="#a07840"/><text x="60" y="110" text-anchor="middle" font-size="32">🌱</text></g>
+              <g id="fl-1" style="display:none"><rect x="58" y="90" width="4" height="50" rx="2" fill="#5a9060"/><ellipse cx="60" cy="145" rx="18" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="50" cy="105" rx="10" ry="6" fill="#6aaa70" transform="rotate(-20,50,105)"/></g>
+              <g id="fl-2" style="display:none"><rect x="58" y="75" width="4" height="65" rx="2" fill="#5a9060"/><ellipse cx="60" cy="148" rx="20" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="46" cy="100" rx="12" ry="7" fill="#6aaa70" transform="rotate(-30,46,100)"/><ellipse cx="74" cy="108" rx="12" ry="7" fill="#6aaa70" transform="rotate(20,74,108)"/><ellipse cx="60" cy="72" rx="10" ry="14" fill="#e87090"/></g>
+              <g id="fl-3" style="display:none"><rect x="58" y="70" width="4" height="70" rx="2" fill="#5a9060"/><ellipse cx="60" cy="148" rx="22" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="44" cy="95" rx="13" ry="7" fill="#6aaa70" transform="rotate(-35,44,95)"/><ellipse cx="76" cy="103" rx="13" ry="7" fill="#6aaa70" transform="rotate(25,76,103)"/><circle cx="60" cy="55" r="16" fill="#f0b0c0"/><circle cx="60" cy="40" r="8" fill="#f8d0a0"/><circle cx="48" cy="50" r="6" fill="#f0b0c0"/><circle cx="72" cy="50" r="6" fill="#f0b0c0"/><circle cx="50" cy="65" r="6" fill="#f0b0c0"/><circle cx="70" cy="65" r="6" fill="#f0b0c0"/><circle cx="60" cy="55" r="5" fill="#f8e040"/></g>
+              <g id="fl-4" style="display:none"><rect x="58" y="68" width="4" height="72" rx="2" fill="#4a8050"/><ellipse cx="60" cy="148" rx="24" ry="9" fill="#8a7050" opacity="0.4"/><ellipse cx="42" cy="93" rx="15" ry="8" fill="#5aaa60" transform="rotate(-35,42,93)"/><ellipse cx="78" cy="100" rx="15" ry="8" fill="#5aaa60" transform="rotate(25,78,100)"/><circle cx="60" cy="50" r="20" fill="#ffb0d0" opacity="0.6"/><circle cx="60" cy="32" r="10" fill="#ffd0e8"/><circle cx="44" cy="44" r="9" fill="#ffc0d8"/><circle cx="76" cy="44" r="9" fill="#ffc0d8"/><circle cx="44" cy="62" r="9" fill="#ffc0d8"/><circle cx="76" cy="62" r="9" fill="#ffc0d8"/><circle cx="60" cy="50" r="10" fill="#ff90b8"/><circle cx="60" cy="50" r="6" fill="#ffe060"/><text x="28" y="28" font-size="12">✨</text><text x="82" y="22" font-size="10">✨</text></g>
+            </svg>
+            <div class="flower-name" id="flower-name">🌱 Graine</div>
+            <div class="flower-desc" id="flower-desc">Lance ta première séance de travail pour faire pousser ta fleur !</div>
+            <div class="flower-progress" style="margin-top:6px;width:100%;max-width:260px;">
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:4px;"><span>Progression</span><span id="flower-pomo-label">0 séance</span></div>
+              <div style="height:5px;background:var(--paper3);border-radius:3px;overflow:hidden;"><div id="flower-bar" style="height:100%;background:linear-gradient(90deg,#e87090,#f8a0c0);border-radius:3px;width:0%;transition:width .6s ease;"></div></div>
+            </div>
+            <div style="font-size:11px;color:var(--ink3);" id="flower-next-hint">Prochain stade dans 3 séances</div>
+          </div>
+          <div class="sec"><div class="sec-label">🔥 Streak de travail</div><div class="sec-line"></div></div>
+          <div class="streak-box"><div class="streak-num" id="streak-num">0</div><div class="streak-info"><h4 id="streak-title">Commence ton streak aujourd'hui !</h4><p id="streak-sub">Ouvre le site chaque jour pour maintenir ta flamme.</p></div><span class="streak-fire" id="streak-fire">🌱</span></div>
+          <div class="sec"><div class="sec-label">🏅 Récompenses</div><div class="sec-line"></div></div>
+          <div class="reward-grid">
+            <div class="reward-badge locked" id="rew-pomo1"><span class="rb-icon">🍅</span><div class="rb-name">1ère séance</div><div class="rb-desc">1 séance de travail</div></div>
+            <div class="reward-badge locked" id="rew-pomo5"><span class="rb-icon">🍅🍅</span><div class="rb-name">5 séances</div><div class="rb-desc">5 séances de travail</div></div>
+            <div class="reward-badge locked" id="rew-pomo25"><span class="rb-icon">🏆</span><div class="rb-name">25 séances</div><div class="rb-desc">Chercheuse sérieuse !</div></div>
+            <div class="reward-badge locked" id="rew-streak3"><span class="rb-icon">🔥</span><div class="rb-name">Streak x3</div><div class="rb-desc">3 jours de suite</div></div>
+            <div class="reward-badge locked" id="rew-streak7"><span class="rb-icon">🔥🔥</span><div class="rb-name">Streak x7</div><div class="rb-desc">Une semaine !</div></div>
+            <div class="reward-badge locked" id="rew-flower2"><span class="rb-icon">🌿</span><div class="rb-name">Pousse</div><div class="rb-desc">Fleur stade 2</div></div>
+            <div class="reward-badge locked" id="rew-flower4"><span class="rb-icon">🌸</span><div class="rb-name">Fleur épanouie</div><div class="rb-desc">Stade final</div></div>
+            <div class="reward-badge locked" id="rew-victoire5"><span class="rb-icon">⭐</span><div class="rb-name">5 victoires</div><div class="rb-desc">Petit mais costaud</div></div>
+          </div>
+          <div class="sec"><div class="sec-label">💬 Citations favorites</div><div class="sec-line"></div></div>
+          <div class="citations-board" id="citations-board"></div>
+          
+        </div>
+      </div>
+
+    </div><!-- /inner-main -->
+  </div><!-- /inner-layout -->
+</div><!-- /view-schatza -->
+
+<!-- ═══════════════════════════════════
+     SECTION GRIMOIRE
+═══════════════════════════════════ -->
+<div class="view" id="view-grimoire">
+  <div class="inner-layout">
+    <aside class="mini-sidebar" id="sidebar-grimoire">
+      <div class="ms-top">
+        <div class="ms-back" onclick="goHome()">← Accueil</div>
+        <div class="ms-title">Espace schatzi 📖</div>
+        <div class="ms-sub">Le mémoire de Pauline</div>
+      </div>
+      <div class="ms-nav">
+        <div class="ms-group">Du général au particulier</div>
+        <button class="ms-btn active-sage" onclick="showPage('overview','grimoire')"><span class="ms-icon">🗺️</span>Vue d'ensemble</button>
+        <button class="ms-btn" onclick="showPage('concepts','grimoire')"><span class="ms-icon">📚</span>Les concepts</button>
+        <button class="ms-btn" onclick="showPage('recherche','grimoire')"><span class="ms-icon">🔬</span>La recherche</button>
+        <button class="ms-btn" onclick="showPage('methode','grimoire')"><span class="ms-icon">🎤</span>La méthode</button>
+        <div class="ms-group">Référence</div>
+        <button class="ms-btn" onclick="showPage('sources','grimoire')"><span class="ms-icon">📖</span>Les sources</button>
+      </div>
+      <div class="ms-footer">Source : fichiers docx fournis</div>
+    </aside>
+    <div class="inner-main">
+
+      <!-- ── VUE D'ENSEMBLE ── -->
+      <div class="page active" id="page-overview">
+        <div class="hero">
+          <div class="hero-chip sage">Vue d'ensemble</div>
+          <h1>Le mémoire <em>en un coup d'œil</em></h1>
+          <p>La chaîne causale, les chiffres clés et la question à laquelle tout répond.</p>
+        </div>
+        <div class="content">
+
+          <div class="sec"><div class="sec-label sage">La logique du mémoire</div><div class="sec-line"></div></div>
+          <div style="background:var(--paper);border:1px solid var(--line2);border-radius:var(--r);padding:20px;margin-bottom:14px;overflow-x:auto;">
+            <div style="display:flex;align-items:center;gap:0;min-width:600px;">
+              <div style="flex:1;background:var(--paper2);border:1px solid var(--line2);border-radius:var(--r2);padding:14px 10px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:var(--ink);">Handicap complexe</div>
+                <div style="font-size:10px;color:var(--ink3);margin-top:3px;">Multidimensionnel</div>
+              </div>
+              <div style="font-size:18px;color:var(--ink3);padding:0 8px;">→</div>
+              <div style="flex:1;background:var(--terr-bg);border:1px solid rgba(139,58,30,0.2);border-radius:var(--r2);padding:14px 10px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:var(--terr);">Difficultés de communication</div>
+                <div style="font-size:10px;color:var(--terr2);margin-top:3px;">Pas de langage verbal</div>
+              </div>
+              <div style="font-size:18px;color:var(--ink3);padding:0 8px;">→</div>
+              <div style="flex:1;background:var(--sage-bg);border:1px solid rgba(61,107,82,0.2);border-radius:var(--r2);padding:14px 10px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:var(--sage);">Approches basales</div>
+                <div style="font-size:10px;color:var(--sage);margin-top:3px;">Corps, rythme, sens</div>
+              </div>
+              <div style="font-size:18px;color:var(--ink3);padding:0 8px;">→</div>
+              <div style="flex:1;background:var(--ink);border-radius:var(--r2);padding:14px 10px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:#fff;">CBM — Meyer</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:3px;">Musique comme langue</div>
+              </div>
+              <div style="font-size:18px;color:var(--ink3);padding:0 8px;">→</div>
+              <div style="flex:1;background:var(--ochre-bg);border:1px solid rgba(138,96,16,0.2);border-radius:var(--r2);padding:14px 10px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:var(--ochre);">Dialogue musico-moteur</div>
+                <div style="font-size:10px;color:var(--ochre);margin-top:3px;">Reconnaissance mutuelle</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">Chiffres clés</div><div class="sec-line"></div></div>
+          <div class="stats">
+            <div class="stat s-t"><span class="n">9,6×</span><div class="l">Plus d'activité communicative en CBM vs pauses musicales<br><em style="font-size:10px;">(Bernzott, 2016)</em></div></div>
+            <div class="stat s-s"><span class="n">3,4×</span><div class="l">Plus d'activité communicative vs autres activités musicales</div></div>
+            <div class="stat s-n"><span class="n">11</span><div class="l">Séances filmées dans l'étude de référence</div></div>
+            <div class="stat s-n"><span class="n">4</span><div class="l">Blocs thématiques dans le guide d'entretien</div></div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">Question centrale</div><div class="sec-line"></div></div>
+          <div class="pquote">
+            <p>Welche Erfahrungen haben Musiklehrer:innen und Musiktherapeut:innen in der Umsetzung musikbasierter Kommunikation mit Schüler:innen mit Komplexer Behinderung?</p>
+            <div class="tr"><span class="tr-lbl">Traduction fidèle</span>Quelles expériences ont faites les enseignants en musique et les musicothérapeutes dans la mise en œuvre de la communication basée sur la musique avec des élèves présentant un handicap complexe ?</div>
+            <div class="src">Staatsexamensarbeit_, chapitre 7</div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">La lacune que Pauline comble</div><div class="sec-line"></div></div>
+          <div class="card terr">
+            <p>Les études existantes sur la CBM observent les élèves. Aucune ne recueille le <strong>point de vue des enseignants et thérapeutes</strong> qui la mettent en pratique au quotidien dans une école spécialisée. C'est précisément ce que ce mémoire cherche à comprendre.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── LES CONCEPTS ── -->
+      <div class="page" id="page-concepts">
+        <div class="hero">
+          <div class="hero-chip sage">Les concepts</div>
+          <h1>Les <em>grandes idées</em> du mémoire</h1>
+          <p>Quatre concepts à connaître pour comprendre ce que fait Pauline.</p>
+        </div>
+        <div class="content">
+
+          <div class="sec"><div class="sec-label sage">1 — Le handicap complexe</div><div class="sec-line"></div></div>
+          <div class="card sage">
+            <h3>Komplexe Behinderung</h3>
+            <p>Un handicap <strong>lourd et multidimensionnel</strong> — moteur, cognitif, sensoriel et communicatif à la fois. Les élèves concernés n'ont pas accès au langage verbal et nécessitent un accompagnement intensif. Chaque profil est unique.</p>
+            <p>Ils sont scolarisés dans des <strong>écoles spécialisées</strong> (<em>Förderschule mit dem Förderschwerpunkt Geistige Entwicklung</em>) en Allemagne, avec de petits groupes et des équipes pluridisciplinaires.</p>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">2 — La communication basale</div><div class="sec-line"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div class="card" style="border-top:3px solid var(--sage);">
+              <h4>Stimulation Basale</h4>
+              <p><em>Fröhlich</em> — entrer en contact via les perceptions corporelles primaires : toucher, vibration, mouvement. La musique est un mode de stimulation vibratoire direct.</p>
+            </div>
+            <div class="card" style="border-top:3px solid var(--terr);">
+              <h4>Communication Basale</h4>
+              <p><em>Mall</em> — l'élève communique déjà via sa respiration, son tonus, ses mouvements. Le professionnel les lit et y répond pour créer une réciprocité.</p>
+            </div>
+            <div class="card" style="border-top:3px solid var(--ochre);">
+              <h4>Intensive Interaction</h4>
+              <p><em>Nind & Hewett</em> — imiter les comportements spontanés de l'élève pour créer un échange fondé sur le plaisir partagé. Le pro suit l'initiative de l'élève.</p>
+            </div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">3 — La CBM selon Meyer</div><div class="sec-line"></div></div>
+          <div class="card terr">
+            <h3>Musikbasierte Kommunikation</h3>
+            <p>La musique comme <strong>langue de substitution</strong>. L'intervenant (piano ou voix) synchronise sa musique sur les rythmes biologiques de l'élève — respiration, mouvements — pour créer un dialogue sans mots.</p>
+            <p><strong>Objectif :</strong> communicatif et relationnel, pas musical. Permettre à l'élève de faire l'expérience d'être entendu et de produire un effet sur son environnement.</p>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div class="card" style="text-align:center;padding:18px 14px;">
+              <div style="font-size:28px;margin-bottom:8px;">👂</div>
+              <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;">① Hinspüren</div>
+              <div style="font-size:12px;color:var(--ink3);">Observer, écouter le corps de l'élève avant de jouer</div>
+            </div>
+            <div class="card" style="text-align:center;padding:18px 14px;">
+              <div style="font-size:28px;margin-bottom:8px;">🪞</div>
+              <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;">② Spiegeln</div>
+              <div style="font-size:12px;color:var(--ink3);">Refléter musicalement — "je te vois, je te reconnais"</div>
+            </div>
+            <div class="card" style="text-align:center;padding:18px 14px;">
+              <div style="font-size:28px;margin-bottom:8px;">🎵</div>
+              <div style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:4px;">③ Begleiten</div>
+              <div style="font-size:12px;color:var(--ink3);">Accompagner dans le temps pour laisser émerger le dialogue</div>
+            </div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">4 — Le principe de Watzlawick</div><div class="sec-line"></div></div>
+          <div class="pquote">
+            <p>« On ne peut pas ne pas communiquer. »</p>
+            <div class="src">— Paul Watzlawick · Principe fondateur du mémoire</div>
+          </div>
+          <div class="card">
+            <p>Tout comportement en présence d'autrui a valeur de message — le silence, un mouvement, un changement de respiration. Pour les élèves à handicap complexe, cela signifie qu'ils <strong>communiquent en permanence</strong>, même sans le vouloir. Le rôle du professionnel est d'apprendre à lire ces signaux.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── LA RECHERCHE ── -->
+      <div class="page" id="page-recherche">
+        <div class="hero">
+          <div class="hero-chip sage">La recherche existante</div>
+          <h1>Ce qu'on <em>sait déjà</em></h1>
+          <p>Les études existantes sur la CBM — et ce qui manque encore.</p>
+        </div>
+        <div class="content">
+
+          <div class="sec"><div class="sec-label sage">L'étude de référence — Bernzott (2016)</div><div class="sec-line"></div></div>
+          <div class="card">
+            <h3>Qui ? Comment ?</h3>
+            <ul class="dlist">
+              <li>Étude de cas avec des <strong>jumelles de 13 ans présentant un handicap complexe</strong></li>
+              <li><strong>11 séances individuelles filmées</strong> — CBM centrée sur la respiration, synchronisation au piano</li>
+              <li>5 ans d'expérience préalable en musicothérapie avec Meyer au moment de l'étude</li>
+              <li>Critères observés : fréquence respiratoire, tonus musculaire, activité oculaire, vocalisations, activité motrice, attention</li>
+            </ul>
+          </div>
+          <div class="stats">
+            <div class="stat s-t"><span class="n">9,6×</span><div class="l">Plus d'activité communicative en CBM vs pauses musicales</div></div>
+            <div class="stat s-s"><span class="n">3,4×</span><div class="l">Plus d'activité communicative vs autres activités musicales</div></div>
+            <div class="stat s-n"><span class="n">6/6</span><div class="l">Tous les critères communicatifs observés en séance CBM</div></div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">Ce que Pauline a identifié</div><div class="sec-line"></div></div>
+          <div class="pquote">
+            <p>Eine Lücke im aktuellen Forschungsstand stellt die konkrete Umsetzung des Konzept im schulischen Umfeld, wie auch die subjektive Perspektive von Musiklehrer:innen und -therapeut:innen dar.</p>
+            <div class="src">Staatsexamensarbeit_, chapitre 5</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div class="card terr">
+              <h4>Lacune 1</h4>
+              <p>Aucune étude ne documente la <strong>mise en œuvre concrète de la CBM en milieu scolaire quotidien</strong> — contraintes de temps, d'espace, de personnel.</p>
+            </div>
+            <div class="card terr">
+              <h4>Lacune 2</h4>
+              <p>Aucune étude ne recueille la <strong>perspective subjective des enseignants et musicothérapeutes</strong> qui proposent ces dispositifs au quotidien.</p>
+            </div>
+          </div>
+          <div class="card sage">
+            <p><strong>C'est exactement ce que Pauline cherche à combler</strong> avec ses entretiens semi-directifs auprès de professionnels expérimentés.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── LA MÉTHODE ── -->
+      <div class="page" id="page-methode">
+        <div class="hero">
+          <div class="hero-chip sage">La méthode</div>
+          <h1>Comment <em>elle fait sa recherche</em></h1>
+          <p>Le design qualitatif, les entretiens et les 4 blocs du guide.</p>
+        </div>
+        <div class="content">
+
+          <div class="sec"><div class="sec-label sage">Pourquoi des entretiens ?</div><div class="sec-line"></div></div>
+          <div class="card">
+            <p>Pauline utilise un <strong>design qualitatif</strong> car son intérêt est de <em>reconstruire des expériences professionnelles</em> — comprendre comment des gens vivent quelque chose, pas mesurer un phénomène. Elle mène des <strong>entretiens semi-directifs</strong> (<em>leitfadengestützte Interviews</em>) avec des experts : enseignants en musique et musicothérapeutes ayant une expérience pratique avérée avec des élèves à handicap complexe.</p>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <div style="flex:1;background:var(--paper);border:1px solid var(--line2);border-radius:var(--r);padding:16px;text-align:center;">
+              <div style="font-family:var(--serif);font-size:28px;font-weight:600;color:var(--terr);">30–45</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:4px;">Minutes par entretien</div>
+            </div>
+            <div style="flex:1;background:var(--paper);border:1px solid var(--line2);border-radius:var(--r);padding:16px;text-align:center;">
+              <div style="font-family:var(--serif);font-size:28px;font-weight:600;color:var(--terr);">4</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:4px;">Blocs thématiques</div>
+            </div>
+            <div style="flex:1;background:var(--paper);border:1px solid var(--line2);border-radius:var(--r);padding:16px;text-align:center;">
+              <div style="font-family:var(--serif);font-size:28px;font-weight:600;color:var(--terr);">Audio</div>
+              <div style="font-size:11px;color:var(--ink3);margin-top:4px;">Enregistrement avec consentement</div>
+            </div>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">Les 4 blocs du guide d'entretien</div><div class="sec-line"></div></div>
+
+          <div class="iblock">
+            <div class="iblock-h" onclick="toggleIblock(this)"><span class="iblock-tag">Bloc 1</span><span class="iblock-title">Beziehung — Construction de la relation</span><span class="iblock-arr">▼</span></div>
+            <div class="iblock-b">
+              <div class="q-row">
+                <div class="q-col"><label>Question principale</label><div class="q-item">Quelle signification a l'interaction musicale pour la construction de la relation avec l'élève ?</div></div>
+                <div class="q-col"><label>Points explorés</label><div class="q-item">Évolution de la relation dans le temps</div><div class="q-item">Interactions musicales entre élèves</div><div class="q-item">Exemples concrets de changements observés</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="iblock">
+            <div class="iblock-h" onclick="toggleIblock(this)"><span class="iblock-tag">Bloc 2</span><span class="iblock-title">Gestaltung — Mise en œuvre concrète</span><span class="iblock-arr">▼</span></div>
+            <div class="iblock-b">
+              <div class="q-row">
+                <div class="q-col"><label>Question principale</label><div class="q-item">Comment mettez-vous concrètement la CBM en pratique au quotidien ?</div></div>
+                <div class="q-col"><label>Points explorés</label><div class="q-item">Espaces et instruments choisis</div><div class="q-item">Hinspüren, Spiegeln, Begleiten selon Meyer</div><div class="q-item">Structure fixe ou improvisation libre</div><div class="q-item">Individuel vs groupe</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="iblock">
+            <div class="iblock-h" onclick="toggleIblock(this)"><span class="iblock-tag">Bloc 3</span><span class="iblock-title">Wahrnehmung — Perception et interprétation</span><span class="iblock-arr">▼</span></div>
+            <div class="iblock-b">
+              <div class="q-row">
+                <div class="q-col"><label>Question principale</label><div class="q-item">Quelles expressions communicatives percevez-vous chez vos élèves pendant la CBM ?</div></div>
+                <div class="q-col"><label>Points explorés</label><div class="q-item">Expression intentionnelle ou réflexe ?</div><div class="q-item">Comment attribuer une signification</div><div class="q-item">Émergence concrète d'un dialogue</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="iblock">
+            <div class="iblock-h" onclick="toggleIblock(this)"><span class="iblock-tag">Bloc 4</span><span class="iblock-title">Gelingensbedingungen — Conditions de réussite</span><span class="iblock-arr">▼</span></div>
+            <div class="iblock-b">
+              <div class="q-row">
+                <div class="q-col"><label>Question principale</label><div class="q-item">Quelles conditions de réussite et obstacles identifiez-vous pour la CBM en contexte scolaire ?</div></div>
+                <div class="q-col"><label>Points explorés</label><div class="q-item">Temps, ressources, personnel</div><div class="q-item">Réticences au contact physique</div><div class="q-item">Soutien des collègues et de la direction</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── LES SOURCES ── -->
+      <div class="page" id="page-sources">
+        <div class="hero">
+          <div class="hero-chip sage">Sources</div>
+          <h1>Les <em>références</em></h1>
+          <p>Bibliographie et auteurs mentionnés dans le mémoire.</p>
+        </div>
+        <div class="content">
+
+          <div class="sec"><div class="sec-label sage">Références rédigées dans le document</div><div class="sec-line"></div></div>
+          <div class="card terr">
+            <h3>Bernzott, M. (2016)</h3>
+            <p>Fallstudie zur Musikbasierten Kommunikation mit einem Zwillingspaar mit schwerer Behinderung.</p>
+            <p>In H. Meyer, P. Zentel, & T. Sansour (Hrsg.), <em>Musik und schwere Behinderung</em> (1. Aufl.). von Loeper Literaturverlag.</p>
+          </div>
+          <div class="card">
+            <h3>Nydahl, P., & Bartoszek, G. (Hrsg.) (1999)</h3>
+            <p><em>Basale Stimulation: Neue Wege in der Intensivpflege</em> (2. Aufl.). Ullstein Medical.</p>
+            <p style="font-size:12px;color:var(--ink3);">→ Critères d'observation utilisés dans l'étude Bernzott</p>
+          </div>
+
+          <div class="sec"><div class="sec-label sage">Auteurs mentionnés — références à compléter</div><div class="sec-line"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Watzlawick</div>
+              <div style="font-size:12px;color:var(--ink3);">Pragmatique de la communication — chapitre 2</div>
+            </div>
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Light & Dowden</div>
+              <div style="font-size:12px;color:var(--ink3);">Communication augmentative — chapitre 2</div>
+            </div>
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Martin</div>
+              <div style="font-size:12px;color:var(--ink3);">Communication — chapitre 2</div>
+            </div>
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Meyer, Hansjörg</div>
+              <div style="font-size:12px;color:var(--ink3);">Concept CBM — chapitre 4, co-éditeur Bernzott 2016</div>
+            </div>
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Fröhlich</div>
+              <div style="font-size:12px;color:var(--ink3);">Basale Stimulation — chapitre 2</div>
+            </div>
+            <div class="card" style="padding:14px 18px;">
+              <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;">Mall</div>
+              <div style="font-size:12px;color:var(--ink3);">Basale Kommunikation — chapitre 2</div>
+            </div>
+          </div>
+          <div class="notif">Ces références seront à ajouter dans le Literaturverzeichnis une fois les chapitres théoriques rédigés.</div>
+
+        </div>
+      </div>
+
+    </div><!-- /inner-main -->
+  </div><!-- /inner-layout -->
+</div><!-- /view-grimoire -->
+
+<script>
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+var currentSection = "home";
+
+function openSection(section) {
+  document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+  document.getElementById("view-" + section).classList.add("active");
+  currentSection = section;
+  window.scrollTo(0,0);
+  maybeSurprise(section);
+}
+
+function goHome() {
+  document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+  document.getElementById("view-home").classList.add("active");
+  currentSection = "home";
+  window.scrollTo(0,0);
+  updateHomeXP();
+}
+
+function showPage(pageId, section) {
+  var sidebar = document.getElementById("sidebar-" + section);
+  if (sidebar) {
+    sidebar.querySelectorAll(".ms-btn").forEach(function(b){ b.classList.remove("active","active-sage"); });
+    var target = null;
+    sidebar.querySelectorAll(".ms-btn").forEach(function(b){
+      var oc = b.getAttribute("onclick") || "";
+      if (oc.indexOf("'" + pageId + "'") > -1) { target = b; }
+    });
+    if (target) {
+
+      target.classList.add(section === "grimoire" ? "active-sage" : "active");
+    }
+  }
+  var innerMain = document.querySelector("#view-" + section + " .inner-main");
+  if (innerMain) {
+    innerMain.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+    var page = document.getElementById("page-" + pageId);
+    if (page) { page.classList.add("active"); }
+    innerMain.scrollTo ? innerMain.scrollTo(0,0) : window.scrollTo(0,0);
+  }
+  if (pageId === "extras") { buildCitationsBoard(); checkRewards(totalPomos); }
+  if (window.innerWidth <= 800) mbToggle(false);
+}
+
+function mbToggle(force) {
+  var activeSidebar = document.querySelector(".view.active .mini-sidebar");
+  if (!activeSidebar) return;
+  var ov = document.getElementById("mb-overlay");
+  var open = (force !== undefined) ? force : !activeSidebar.classList.contains("open");
+  activeSidebar.classList.toggle("open", open);
+  ov.classList.toggle("show", open);
+}
+
+function toggleIblock(h) {
+  h.classList.toggle("open");
+  h.nextElementSibling.classList.toggle("open");
+}
+
+// CONFETTI
+var confColors = ["#8b3a1e","#3d6b52","#c8901a","#b85030","#2a7060"];
+function launchConfetti() {
+  for (var i = 0; i < 40; i++) {
+    (function(delay){
+      setTimeout(function(){
+        var c = document.createElement("div"); c.className = "confetti-piece";
+        c.style.cssText = "left:"+Math.random()*100+"vw;top:-10px;background:"+confColors[Math.floor(Math.random()*confColors.length)]+";transform:rotate("+Math.random()*360+"deg);animation-duration:"+(0.8+Math.random()*0.8)+"s;";
+        document.body.appendChild(c);
+        setTimeout(function(){ c.remove(); }, 1800);
+      }, delay);
+    })(i*30);
+  }
+}
+
+// SAVE INDICATOR
+var saveTimer = null;
+function showSaveIndicator() {
+  var el = document.getElementById("save-indicator");
+  el.style.opacity = "1";
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(function(){ el.style.opacity = "0"; }, 2000);
+}
+
+// PANICOMETRE
+var panicLabels = ["😌 Zen (0/10)","😌 Presque zen (1/10)","🙂 Ça va (2/10)","😌 Zen (3/10)","😐 Légère tension (4/10)","😤 Tendue (5/10)","😰 Stressée (6/10)","😰 Bien stressée (7/10)","😱 Panique (8/10)","🔥 PANIQUE TOTALE (9/10)","💀 AU SECOURS (10/10)"];
+function updatePanic(v) {
+  document.getElementById("panic-val").textContent = panicLabels[v];
+  document.body.classList.remove("panic-med","panic-high","panic-max");
+  if (v >= 8) document.body.classList.add("panic-max");
+  else if (v >= 6) document.body.classList.add("panic-high");
+  else if (v >= 4) document.body.classList.add("panic-med");
+  saveState();
+}
+
+// CITATIONS
+var citations = [
+  "« Chaque page écrite est une page de moins à écrire. »",
+  "« Watzlawick a bien commencé quelque part lui aussi. »",
+  "« Le chapitre 4 ne se rédigera pas tout seul. Enfin si, si tu attends assez longtemps. »",
+  "« Une intro imparfaite vaut mieux qu'une intro inexistante. »",
+  "« Les chercheuses qui doutent sont les meilleures chercheuses. »",
+  "« Meyer a mis des années. Toi tu as des semaines. Tu es plus rapide que Meyer. »",
+  "« Chaque virgule compte. Tu en as déjà écrit 200. Félicitations. »",
+  "« Le mémoire ne sait pas que tu as peur de lui. Il t'attend, c'est tout. »",
+  "« Si tu lis ça, tu fais une pause. C'est bien. Bois de l'eau. »",
+  "« La communication basale dit que tout signal compte. Ta première phrase aussi. »",
+  "« Les footnotes sont des amies. Peut-être tes seules amies ce soir. »",
+  "« On ne peut pas ne pas communiquer. — Watzlawick »"
+];
+var lastCit = -1;
+function newCitation() {
+  var idx; do { idx = Math.floor(Math.random()*citations.length); } while (idx===lastCit && citations.length>1);
+  lastCit = idx;
+  var el = document.getElementById("citation-text");
+  el.style.opacity="0";
+  setTimeout(function(){ el.textContent=citations[idx]; el.style.transition="opacity .4s"; el.style.opacity="1"; }, 250);
+}
+
+// JPP
+var jppMsgs = [
+  "Normal. C'est comme ca qu'on ecrit un memoire.",
+  "C'est le signe que tu prends ca au serieux. Meyer serait fier.",
+  "Prends une grande inspiration. Expire. Recommence.",
+  "Ferme l'ordi 10 minutes. Reviens. Ca ira mieux. Peut-etre.",
+  "Tu en peux plus ? Parfait. C'est la que le bon travail commence.",
+  "Schatza. Tu as deja ecrit des choses brillantes. Ce soir c'est juste difficile.",
+  "Monsieur Patate aussi avait des jours difficiles. Il s'en est sorti."
+];
+function jpp() {
+  var msg = jppMsgs[Math.floor(Math.random()*jppMsgs.length)];
+  var el = document.getElementById("jpp-msg");
+  el.textContent=msg; el.classList.add("show");
+  launchConfetti();
+  setTimeout(function(){ el.classList.remove("show"); }, 5000);
+}
+
+// WHEEL
+var wheelOpts = [
+  "Fais 5 respirations profondes comme dans la CBM",
+  "Va te faire un cafe. C'est officiel, c'est de la recherche.",
+  "Relis ton intro une 47eme fois (ca compte)",
+  "Marche 5 minutes. Meyer a surement fait pareil.",
+  "Ouvre le chapitre 2 et lis juste la premiere phrase.",
+  "Regarde un des messages secrets de Paul",
+  "Regarde Monsieur Patate pour te motiver",
+  "Ecris UNE phrase. N'importe laquelle. Tu verras.",
+  "Fais 10 squats. Le sang doit circuler dans le cerveau.",
+  "Lance une séance de travail. Tu peux."
+];
+function spinWheel() {
+  var el = document.getElementById("wheel-result");
+  el.style.opacity="0";
+  setTimeout(function(){ el.textContent=wheelOpts[Math.floor(Math.random()*wheelOpts.length)]; el.style.transition="opacity .3s"; el.style.opacity="1"; }, 200);
+}
+
+// VICTOIRES
+function addVictoire() {
+  var inp = document.getElementById("victoire-input");
+  var val = inp.value.trim(); if (!val) return;
+  var icons = ["⭐","🌟","✨","🎉","🏆","💪","🎯","🔥","👏","🌈"];
+  var ic = icons[Math.floor(Math.random()*icons.length)];
+  var item=document.createElement("div"); item.className="victoire-item";
+  var icEl=document.createElement("span"); icEl.style.fontSize="16px"; icEl.textContent=ic;
+  var sp=document.createElement("span"); sp.style.flex="1"; sp.textContent=val;
+  var del=document.createElement("span"); del.className="vi-del"; del.textContent="✕";
+  del.onclick=function(){ item.remove(); saveState(); };
+  item.appendChild(icEl); item.appendChild(sp); item.appendChild(del);
+  document.getElementById("victoire-list").prepend(item);
+  inp.value=""; launchConfetti(); saveState(); checkRewards(totalPomos);
+}
+
+// TODO
+function addTodo() {
+  var inp = document.getElementById("todo-input");
+  var val = inp.value.trim(); if (!val) return;
+  var item=document.createElement("div"); item.className="todo-item";
+  var cb=document.createElement("div"); cb.className="todo-cb"; cb.textContent="✓";
+  var txt=document.createElement("span"); txt.className="ti-txt"; txt.textContent=val;
+  var del=document.createElement("span"); del.className="ti-del"; del.textContent="✕";
+  del.onclick=function(e){ e.stopPropagation(); item.remove(); saveState(); };
+  item.appendChild(cb); item.appendChild(txt); item.appendChild(del);
+  item.onclick=function(){ this.classList.toggle("done"); if(this.classList.contains("done")) launchConfetti(); saveState(); };
+  document.getElementById("todo-list").appendChild(item);
+  inp.value=""; saveState();
+}
+
+// COUNTDOWN
+var cdInterval=null;
+var dramaMessages=[
+  [999,"Fixe ta date de remise pour activer le compte a rebours"],
+  [90,"Tu as largement le temps. Enfin... relativement."],
+  [60,"Deux mois. C'est beaucoup. Ou pas."],
+  [30,"Un mois. Le moment de vraiment y aller."],
+  [14,"Deux semaines. On accelere ?"],
+  [7,"UNE SEMAINE. Respire. Tu geres."],
+  [3,"TROIS JOURS. MEYER. WATZLAWICK. BERNZOTT. GO."],
+  [1,"DEMAIN. Tu as ecrit un memoire entier. Incroyable."],
+  [0,"C'est le jour J ! Aujourd'hui tu rends le memoire de ta vie."]
+];
+function updateCountdown() {
+  var val = document.getElementById("deadline-input").value; if (!val) return;
+  if (cdInterval) clearInterval(cdInterval);
+  function tick(){
+    var diff = new Date(val+"T23:59:59") - new Date();
+    document.getElementById("cd-days").textContent  = Math.max(0,Math.floor(diff/86400000));
+    document.getElementById("cd-hours").textContent = Math.max(0,Math.floor((diff%86400000)/3600000));
+    document.getElementById("cd-mins").textContent  = Math.max(0,Math.floor((diff%3600000)/60000));
+    document.getElementById("cd-secs").textContent  = Math.max(0,Math.floor((diff%60000)/1000));
+    var days=Math.max(0,Math.floor(diff/86400000));
+    var drama=dramaMessages[0][1];
+    for(var i=dramaMessages.length-1;i>=0;i--){ if(days<=dramaMessages[i][0]){ drama=dramaMessages[i][1]; break; } }
+    document.getElementById("cd-drama").textContent=drama;
+  }
+  tick(); cdInterval=setInterval(tick,1000); saveState();
+}
+
+// POMODORO
+var pomo={running:false,work:true,timeLeft:25*60,sessions:0,interval:null};
+var pomoWorkMsgs=["Le travail, c'est le debut de la gloire. Ou juste le debut.","25 minutes. Meyer n'a pas construit son concept en une heure.","Focus. Schatza mode ON.","Tu peux tout ecrire en 25 minutes. Enfin, beaucoup."];
+var pomoPauseMsgs=["Pause meritee. Bois de l'eau, pas du cafe (ok du cafe).","5 minutes pour exister en dehors du memoire.","Respire. Etire-toi. Reviens."];
+function pomoTick(){
+  pomo.timeLeft--;
+  if(pomo.timeLeft<=0){
+    clearInterval(pomo.interval); pomo.running=false;
+    var wasWork=pomo.work;
+    if(pomo.work){ pomo.sessions++; pomo.work=false; pomo.timeLeft=5*60; } else{ pomo.work=true; pomo.timeLeft=25*60; }
+    updatePomoUI();
+    document.getElementById("pomo-start").textContent="▶ Demarrer";
+    var msgs=pomo.work?pomoWorkMsgs:pomoPauseMsgs;
+    var msgEl=document.getElementById("pomo-msg"); if(msgEl&&msgs) msgEl.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    if(wasWork) onPomoComplete();
+    return;
+  }
+  updatePomoUI();
+}
+function updatePomoUI(){
+  var m=Math.floor(pomo.timeLeft/60),s=pomo.timeLeft%60;
+  document.getElementById("pomo-display").textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+  document.getElementById("pomo-mode").textContent=pomo.work?"⏱️ TRAVAIL":"☕ PAUSE";
+  document.getElementById("pomo-sessions").textContent="Session "+(pomo.sessions+1)+" · "+pomo.sessions+" séances accomplies";
+}
+(function(){
+  var ps = document.getElementById("pomo-start");
+  var pr = document.getElementById("pomo-reset");
+  var pk = document.getElementById("pomo-skip");
+  if(ps) ps.onclick=function(){
+    if(pomo.running){ clearInterval(pomo.interval); pomo.running=false; this.textContent="▶ Reprendre"; }
+    else{ pomo.running=true; this.textContent="⏸ Pause"; pomo.interval=setInterval(pomoTick,1000); var msgs=pomo.work?pomoWorkMsgs:pomoPauseMsgs; var msgEl=document.getElementById("pomo-msg"); if(msgEl) msgEl.textContent=msgs[Math.floor(Math.random()*msgs.length)]; }
+  };
+  if(pr) pr.onclick=function(){
+    clearInterval(pomo.interval); pomo.running=false; pomo.work=true; pomo.timeLeft=25*60;
+    if(ps) ps.textContent="▶ Demarrer"; updatePomoUI();
+  };
+  if(pk) pk.onclick=function(){
+    clearInterval(pomo.interval); pomo.running=false;
+    if(pomo.work){ pomo.sessions++; pomo.work=false; pomo.timeLeft=5*60; } else{ pomo.work=true; pomo.timeLeft=25*60; }
+    if(ps) ps.textContent="▶ Demarrer"; updatePomoUI();
+  };
+})();
+
+// PAUL
+// NTFY NOTIFICATIONS
+var NTFY_CHANNEL = "schatza-memoire-2026";
+
+function ntfySend(title, msg) {
+  fetch("https://ntfy.sh/" + NTFY_CHANNEL, {
+    method: "POST",
+    headers: { "Title": title, "Priority": "high", "Tags": "bell" },
+    body: msg
+  }).catch(function(e){ console.warn("Ntfy error:", e); });
+}
+
+var paulMessages = {
+  "cafe":       { title: "Commande cafe", msg: "Schatza commande un cafe - depeche-toi !" },
+  "silence":    { title: "Mode silence",  msg: "Schatza active le mode silence - chut !" },
+  "calin":      { title: "Calin requis",  msg: "Schatza a besoin d'un calin. Maintenant." },
+  "repas":      { title: "Commande repas",msg: "Schatza a faim - elle attend le menu !" },
+  "relecture":  { title: "Relecture urgente", msg: "Schatza envoie un paragraphe a relire !" },
+  "celebration":{ title: "On fete !",     msg: "Schatza veut celebrer une victoire !" }
+};
+
+var paulKeys = ["cafe","silence","calin","repas","relecture","celebration"];
+var paulIdx = 0;
+
+document.querySelectorAll(".paul-order-btn").forEach(function(btn){
+  var key = paulKeys[paulIdx % paulKeys.length];
+  paulIdx++;
+  btn.onclick = (function(k){
+    return function(){
+      this.style.display = "none";
+      this.nextElementSibling.style.display = "block";
+      var notif = paulMessages[k] || { title: "Commande Paul", msg: "Schatza a besoin de toi !" };
+      ntfySend(notif.title, notif.msg);
+    };
+  })(key);
+});
+
+// SECRETS
+document.querySelectorAll(".secret-env").forEach(function(env){
+  env.onclick=function(){
+    if(this.classList.contains("opened")) return;
+    this.classList.add("opened");
+    this.querySelector(".se-msg").style.display="block";
+    this.querySelector(".se-label").style.fontWeight="600";
+    this.querySelector(".se-label").style.color="var(--sage)";
+    saveState();
+  };
+});
+
+// WIRE UP
+document.getElementById("citation-btn").onclick=newCitation;
+document.getElementById("jpp-btn").onclick=jpp;
+document.getElementById("wheel-btn").onclick=spinWheel;
+document.getElementById("victoire-btn").onclick=addVictoire;
+document.getElementById("victoire-input").addEventListener("keydown",function(e){ if(e.key==="Enter") addVictoire(); });
+(function(){ var tab=document.getElementById("todo-add-btn"); if(tab) tab.onclick=addTodo; })();
+(function(){ var ti=document.getElementById("todo-input"); if(ti) ti.addEventListener("keydown",function(e){ if(e.key==="Enter") addTodo(); }); })();
+document.querySelectorAll(".todo-item").forEach(function(item){
+  if(!item) return;
+  item.onclick=function(){ this.classList.toggle("done"); if(this.classList.contains("done")) launchConfetti(); saveState(); };
+  var del=item.querySelector(".ti-del"); if(del) del.onclick=function(e){ e.stopPropagation(); item.remove(); saveState(); };
+});
+
+
+// ══════════════════════════════════════════════
+// SÉANCES DE TRAVAIL
+// ══════════════════════════════════════════════
+var seanceState = {
+  running: false,
+  paused: false,
+  startTime: null,
+  pausedElapsed: 0,
+  pauseStart: null,
+  interval: null,
+  obj: "",
+  stressIn: 3
+};
+
+var stressLabels = [
+  "😌 Zen (0/10)","😌 Presque zen (1/10)","🙂 Ca va (2/10)","😌 Zen (3/10)",
+  "😐 Legere tension (4/10)","😤 Tendue (5/10)","😰 Stressée (6/10)",
+  "😰 Bien stressée (7/10)","😱 Panique (8/10)","🔥 PANIQUE (9/10)","💀 AU SECOURS (10/10)"
+];
+
+function updateStressIn(v) {
+  var el = document.getElementById("stress-in-val");
+  if (el) el.textContent = stressLabels[v];
+}
+function updateStressOut(v) {
+  var el = document.getElementById("stress-out-val");
+  if (el) el.textContent = stressLabels[v];
+}
+
+function setSeanceStep(n) {
+  for (var i = 1; i <= 3; i++) {
+    var step = document.getElementById("seance-step-" + i);
+    var dot  = document.getElementById("sdot-" + i);
+    if (step) step.classList.toggle("active", i === n);
+    if (dot) {
+      dot.classList.remove("active","done");
+      if (i < n)  dot.classList.add("done");
+      if (i === n) dot.classList.add("active");
+    }
+  }
+  for (var j = 1; j <= 2; j++) {
+    var line = document.getElementById("sline-" + j);
+    if (line) line.classList.toggle("done", j < n);
+  }
+}
+
+function formatDuration(ms) {
+  var total = Math.floor(ms / 1000);
+  var h = Math.floor(total / 3600);
+  var m = Math.floor((total % 3600) / 60);
+  var s = total % 60;
+  return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+}
+
+function formatDurationHuman(ms) {
+  var total = Math.floor(ms / 1000 / 60);
+  if (total < 1) return "moins d'une minute";
+  if (total < 60) return total + " min";
+  var h = Math.floor(total / 60);
+  var m = total % 60;
+  return h + "h" + (m > 0 ? (m < 10 ? "0" : "") + m : "");
+}
+
+function getElapsed() {
+  if (!seanceState.startTime) return 0;
+  if (seanceState.paused) return seanceState.pausedElapsed;
+  return seanceState.pausedElapsed + (Date.now() - seanceState.startTime);
+}
+
+function startSeance() {
+  var obj = document.getElementById("seance-obj").value.trim();
+  if (!obj) {
+    document.getElementById("seance-obj").focus();
+    document.getElementById("seance-obj").style.borderColor = "var(--terr)";
+    return;
+  }
+  var stressIn = parseInt(document.getElementById("stress-in-slider").value);
+  seanceState = { running:true, paused:false, startTime:Date.now(), pausedElapsed:0, pauseStart:null, interval:null, obj:obj, stressIn:stressIn };
+  var objDisplay = document.getElementById("chrono-obj-display");
+  if (objDisplay) objDisplay.textContent = obj;
+  setSeanceStep(2);
+  seanceState.interval = setInterval(function() {
+    var el = document.getElementById("chrono-display");
+    if (el) el.textContent = formatDuration(getElapsed());
+  }, 1000);
+}
+
+function togglePause() {
+  var btn = document.getElementById("chrono-pause-btn");
+  var status = document.getElementById("chrono-status");
+  var display = document.getElementById("chrono-display");
+  if (!seanceState.paused) {
+    seanceState.paused = true;
+    seanceState.pausedElapsed += Date.now() - seanceState.startTime;
+    seanceState.startTime = null;
+    if (btn) btn.textContent = "▶ Reprendre";
+    if (status) status.textContent = "En pause…";
+    if (display) display.classList.add("paused");
+  } else {
+    seanceState.paused = false;
+    seanceState.startTime = Date.now();
+    if (btn) btn.textContent = "⏸ Pause";
+    if (status) status.textContent = "En cours…";
+    if (display) display.classList.remove("paused");
+  }
+}
+
+function endSeance() {
+  clearInterval(seanceState.interval);
+  seanceState.running = false;
+  var elapsed = getElapsed();
+  var recapEl = document.getElementById("recap-duration");
+  if (recapEl) recapEl.textContent = "Durée de la séance : " + formatDurationHuman(elapsed);
+  // Reset stress out slider
+  var slOut = document.getElementById("stress-out-slider");
+  var valOut = document.getElementById("stress-out-val");
+  if (slOut) { slOut.value = 3; }
+  if (valOut) valOut.textContent = stressLabels[3];
+  // Clear note
+  var noteEl = document.getElementById("seance-note");
+  if (noteEl) noteEl.value = "";
+  setSeanceStep(3);
+  seanceState.elapsed = elapsed;
+}
+
+function saveSeance() {
+  var stressOut = parseInt(document.getElementById("stress-out-slider").value);
+  var note = document.getElementById("seance-note").value.trim();
+  var sessions = loadSessions();
+  var session = {
+    id: Date.now(),
+    date: new Date().toLocaleDateString("fr-FR", { day:"2-digit", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" }),
+    obj: seanceState.obj,
+    duration: seanceState.elapsed || 0,
+    stressIn: seanceState.stressIn,
+    stressOut: stressOut,
+    note: note
+  };
+  sessions.unshift(session);
+  saveSessions(sessions);
+  renderHistory();
+  // Reset for next session
+  setSeanceStep(1);
+  var objInput = document.getElementById("seance-obj");
+  if (objInput) { objInput.value = ""; objInput.style.borderColor = ""; }
+  var slIn = document.getElementById("stress-in-slider");
+  var valIn = document.getElementById("stress-in-val");
+  if (slIn) slIn.value = 3;
+  if (valIn) valIn.textContent = stressLabels[3];
+  launchConfetti();
+}
+
+// ── SESSIONS STORAGE ──
+function loadSessions() {
+  try {
+    var raw = localStorage.getItem("schatza_sessions");
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function saveSessions(sessions) {
+  try {
+    localStorage.setItem("schatza_sessions", JSON.stringify(sessions));
+    showSaveIndicator();
+  } catch(e) { console.warn("Sessions save failed:", e); }
+}
+
+// ── RENDER HISTORY ──
+function renderHistory() {
+  var sessions = loadSessions();
+  var listEl = document.getElementById("history-list");
+  var statsEl = document.getElementById("history-stats");
+  if (!listEl) return;
+
+  if (sessions.length === 0) {
+    listEl.innerHTML = '<div class="history-empty">Aucune séance encore. Lance ta première ! 🌱</div>';
+    if (statsEl) statsEl.style.display = "none";
+    return;
+  }
+
+  // Stats
+  if (statsEl) statsEl.style.display = "flex";
+  var totalTime = sessions.reduce(function(acc, s){ return acc + (s.duration||0); }, 0);
+  var avgStressOut = Math.round(sessions.reduce(function(acc,s){ return acc + (s.stressOut||0); }, 0) / sessions.length * 10) / 10;
+  var countEl = document.getElementById("hs-count");
+  var timeEl  = document.getElementById("hs-time");
+  var stressEl= document.getElementById("hs-stress");
+  if (countEl) countEl.textContent = sessions.length;
+  if (timeEl)  timeEl.textContent  = formatDurationHuman(totalTime);
+  if (stressEl) stressEl.textContent = avgStressOut + "/10";
+
+  // List
+  listEl.innerHTML = "";
+  sessions.forEach(function(s) {
+    var stressChange = s.stressOut - s.stressIn;
+    var changeIcon = stressChange < 0 ? "↓ Mieux" : stressChange > 0 ? "↑ Plus stressée" : "= Stable";
+    var item = document.createElement("div"); item.className = "history-item";
+    item.innerHTML =
+      '<div class="hi-top">' +
+        '<div class="hi-obj">' + s.obj + '</div>' +
+        '<span class="hi-date">' + s.date + '</span>' +
+        '<span class="hi-del" onclick="deleteSession(' + s.id + ')">&#10005;</span>' +
+      '</div>' +
+      '<div class="hi-meta">' +
+        '<span class="hi-badge duration">&#9201; ' + formatDurationHuman(s.duration) + '</span>' +
+        '<span class="hi-badge stress-in">Stress entree : ' + s.stressIn + '/10</span>' +
+        '<span class="hi-badge stress-out">Sortie : ' + s.stressOut + '/10 ' + changeIcon + '</span>' +
+      '</div>' +
+      (s.note ? '<div class="hi-note">&#128172; ' + s.note + '</div>' : '');
+    listEl.appendChild(item);
+  });
+}
+
+function deleteSession(id) {
+  var sessions = loadSessions().filter(function(s){ return s.id !== id; });
+  saveSessions(sessions);
+  renderHistory();
+}
+
+// Init history on load
+renderHistory();
+
+// FLOWER
+var flowerStages=[
+  {name:"🌱 Graine",desc:"Lance ta première séance pour faire pousser ta fleur !",pomosNeeded:0,next:3},
+  {name:"🌿 Pousse",desc:"Elle commence à pousser. Continue comme ça !",pomosNeeded:3,next:8},
+  {name:"🌺 Bourgeon",desc:"Un bourgeon apparait. Tu es a mi-chemin !",pomosNeeded:8,next:15},
+  {name:"🌸 Fleur",desc:"Ta fleur s'ouvre ! La regularite porte ses fruits.",pomosNeeded:15,next:25},
+  {name:"✨ Fleur epanouie",desc:"Ta fleur est magnifique. Comme toi.",pomosNeeded:25,next:25}
+];
+var totalPomos=0;
+function getFlowerStage(p){ var s=0; for(var i=flowerStages.length-1;i>=0;i--){ if(p>=flowerStages[i].pomosNeeded){ s=i; break; } } return s; }
+function updateFlower(pomos,animate){
+  totalPomos=pomos;
+  var si=getFlowerStage(pomos); var stage=flowerStages[si];
+  for(var i=0;i<5;i++){ var g=document.getElementById("fl-"+i); if(g) g.style.display=i===si?"block":"none"; }
+  var nameEl=document.getElementById("flower-name"); var descEl=document.getElementById("flower-desc");
+  var barEl=document.getElementById("flower-bar"); var lblEl=document.getElementById("flower-pomo-label"); var hintEl=document.getElementById("flower-next-hint");
+  if(nameEl) nameEl.textContent=stage.name; if(descEl) descEl.textContent=stage.desc;
+  if(lblEl) lblEl.textContent=pomos+" séance"+(pomos!==1?"s":"");
+  var pct=si>=4?100:Math.round((pomos-stage.pomosNeeded)/(stage.next-stage.pomosNeeded)*100);
+  if(barEl) barEl.style.width=pct+"%";
+  if(hintEl) hintEl.textContent=si>=4?"🌸 Fleur au maximum !":"Prochain stade dans "+(stage.next-pomos)+" séance"+(stage.next-pomos!==1?"s":"");
+  if(animate){ var svg=document.getElementById("flower-svg"); if(svg){ svg.style.transform="scale(1.15)"; setTimeout(function(){ svg.style.transform="scale(1)"; },400); } }
+  checkRewards(pomos); updateHomeXP();
+}
+function onPomoComplete(){ totalPomos++; updateFlower(totalPomos,true); saveState(); }
+
+// STREAK
+var currentStreak=0;
+var streakTiers=[
+  {n:0,fire:"🌱",title:"Commence ton streak aujourd'hui !",sub:"Ouvre le site chaque jour."},
+  {n:1,fire:"🔥",title:"Jour 1 — Le voyage commence !",sub:"Reviens demain."},
+  {n:3,fire:"🔥",title:"Streak x3 — Tu es dans le rythme !",sub:"3 jours de suite."},
+  {n:7,fire:"🔥🔥",title:"Une semaine complete !",sub:"Schatza, une semaine entiere."},
+  {n:14,fire:"🔥🔥🔥",title:"Deux semaines ! Tu es inarretable.",sub:"Le memoire ne sait plus ou se cacher."},
+  {n:30,fire:"🌟",title:"UN MOIS. Dr. Schatza is coming.",sub:"On fete ca comme il se doit."}
+];
+function initStreak(){
+  try{
+    var today=new Date().toDateString();
+    var raw=localStorage.getItem("schatza_streak");
+    var data=raw?JSON.parse(raw):{streak:0,lastVisit:null};
+    if(data.lastVisit===today){ currentStreak=data.streak; }
+    else if(data.lastVisit){ var diff=Math.round((new Date()-new Date(data.lastVisit))/86400000); currentStreak=diff===1?data.streak+1:1; }
+    else{ currentStreak=1; }
+    localStorage.setItem("schatza_streak",JSON.stringify({streak:currentStreak,lastVisit:today}));
+    renderStreak();
+  } catch(e){ console.warn("Streak error:",e); }
+}
+function renderStreak(){
+  var el=document.getElementById("streak-num"); var title=document.getElementById("streak-title");
+  var sub=document.getElementById("streak-sub"); var fire=document.getElementById("streak-fire");
+  if(el) el.textContent=currentStreak;
+  var tier=streakTiers[0];
+  for(var i=streakTiers.length-1;i>=0;i--){ if(currentStreak>=streakTiers[i].n){ tier=streakTiers[i]; break; } }
+  if(title) title.textContent=tier.title; if(sub) sub.textContent=tier.sub; if(fire) fire.textContent=tier.fire;
+}
+
+// HOME XP
+var levels=[{xp:0,lv:1,role:"Apprentie chercheuse"},{xp:40,lv:2,role:"Exploratrice de la CBM"},{xp:80,lv:3,role:"Specialiste en devenir"},{xp:120,lv:4,role:"Chercheuse confirmee"},{xp:170,lv:5,role:"Dr. Schatza, Experte CBM"}];
+function updateHomeXP(){
+  var pct=Math.min(100,Math.round(totalPomos/25*100));
+  var lv=levels[0]; for(var i=levels.length-1;i>=0;i--){ if(totalPomos*6>=levels[i].xp){ lv=levels[i]; break; } }
+  var roleEl=document.getElementById("hx-role"); var barEl=document.getElementById("hx-bar"); var pctEl=document.getElementById("hx-pct");
+  var fireEl=document.getElementById("hx-streak-fire"); var numEl=document.getElementById("hx-streak-num");
+  if(roleEl) roleEl.textContent=lv.role+" · Niv. "+lv.lv;
+  if(barEl) barEl.style.width=pct+"%";
+  if(pctEl) pctEl.textContent=pct+"%";
+  var tier=streakTiers[0]; for(var j=streakTiers.length-1;j>=0;j--){ if(currentStreak>=streakTiers[j].n){ tier=streakTiers[j]; break; } }
+  if(fireEl) fireEl.textContent=tier.fire;
+  if(numEl) numEl.textContent=currentStreak+" jours";
+}
+
+// REWARDS
+function checkRewards(pomos){
+  function unlock(id){ var el=document.getElementById(id); if(el&&el.classList.contains("locked")){ el.classList.remove("locked"); el.classList.add("unlocked"); } }
+  if(pomos>=1) unlock("rew-pomo1"); if(pomos>=5) unlock("rew-pomo5"); if(pomos>=25) unlock("rew-pomo25");
+  if(currentStreak>=3) unlock("rew-streak3"); if(currentStreak>=7) unlock("rew-streak7");
+  var s=getFlowerStage(pomos); if(s>=2) unlock("rew-flower2");
+  if(s>=4){ unlock("rew-flower4"); setTimeout(function(){ document.getElementById("easter-egg").style.display="flex"; },400); }
+  var v=document.querySelectorAll("#victoire-list .victoire-item").length; if(v>=5) unlock("rew-victoire5");
+}
+
+// CITATIONS BOARD
+var lovedCitations={};
+function buildCitationsBoard(){
+  var board=document.getElementById("citations-board"); if(!board) return;
+  board.innerHTML="";
+  citations.forEach(function(cit,idx){
+    var row=document.createElement("div"); row.className="cit-row";
+    var txt=document.createElement("span"); txt.className="cit-txt"; txt.textContent=cit;
+    var heart=document.createElement("span");
+    heart.className="cit-heart"+(lovedCitations[idx]?" loved":"");
+    heart.textContent=lovedCitations[idx]?"❤️":"🤍";
+    heart.onclick=function(){ lovedCitations[idx]=!lovedCitations[idx]; heart.textContent=lovedCitations[idx]?"❤️":"🤍"; heart.classList.toggle("loved",lovedCitations[idx]); saveState(); };
+    row.appendChild(txt); row.appendChild(heart); board.appendChild(row);
+  });
+}
+
+// DEFI
+function toggleDefi(el){ el.classList.toggle("done"); if(el.classList.contains("done")) launchConfetti(); saveState(); }
+
+
+// SURPRISE
+var surpriseMsgs=["Tu fais quelque chose d'important. Ne l'oublie pas. 🧡","Schatza. Je pense a toi. Continue. 💪","Chaque mot compte. Meme les mauvais. Ils font avancer.","Si Meyer voyait ce que tu fais, il serait impressionne. 🎹","Tu es plus proche de la fin que tu ne le crois. 🌸","Pause ? Ok. Mais reviens. Le memoire a besoin de toi.","Une chercheuse serieuse avec un beau sourire. C'est toi. 🌟"];
+var surpriseCount=0,lastSurprisePage="";
+function maybeSurprise(pageId){
+  if(pageId===lastSurprisePage) return;
+  lastSurprisePage=pageId; surpriseCount++;
+  if(surpriseCount<2||Math.random()>0.25) return;
+  var toast=document.getElementById("surprise-toast"); var msgEl=document.getElementById("toast-msg");
+  if(!toast||!msgEl) return;
+  msgEl.textContent=surpriseMsgs[Math.floor(Math.random()*surpriseMsgs.length)];
+  toast.style.display="block"; toast.style.animation="none"; void toast.offsetWidth;
+  toast.style.animation="toastIn .4s cubic-bezier(.34,1.56,.64,1) both";
+  setTimeout(function(){ toast.style.opacity="0"; toast.style.transition="opacity .5s"; setTimeout(function(){ toast.style.display="none"; toast.style.opacity=""; toast.style.transition=""; },500); },5000);
+}
+
+// SAVE / LOAD
+function saveState(){
+  try{
+    var victoires=[]; document.querySelectorAll("#victoire-list .victoire-item").forEach(function(item){ var sp=item.querySelectorAll("span")[1]; if(sp) victoires.push(sp.textContent); });
+    var todos=[]; document.querySelectorAll("#todo-list .todo-item").forEach(function(item){ var txt=item.querySelector(".ti-txt"); if(txt) todos.push({text:txt.textContent,done:item.classList.contains("done")}); });
+    var secrets=[]; document.querySelectorAll(".secret-env").forEach(function(env){ secrets.push(env.classList.contains("opened")); });
+    var state={
+      panicVal:document.getElementById("panic-slider")?document.getElementById("panic-slider").value:3,
+      deadline:document.getElementById("deadline-input")?document.getElementById("deadline-input").value:"",
+      pomos:totalPomos,loved:lovedCitations,victoires:victoires,todos:todos,secrets:secrets,
+    };
+    localStorage.setItem("schatza_v2",JSON.stringify(state)); showSaveIndicator();
+  } catch(e){ console.warn("Save failed:",e); }
+}
+function loadState(){
+  try{
+    var raw=localStorage.getItem("schatza_v2"); if(!raw) return;
+    var state=JSON.parse(raw);
+    if(state.panicVal){ var sl=document.getElementById("panic-slider"); if(sl){ sl.value=state.panicVal; updatePanic(state.panicVal); } }
+    if(state.deadline){ var di=document.getElementById("deadline-input"); if(di){ di.value=state.deadline; updateCountdown(); } }
+    if(state.pomos) updateFlower(state.pomos,false);
+    if(state.loved) lovedCitations=state.loved;
+    if(state.victoires&&state.victoires.length){
+      var vlist=document.getElementById("victoire-list"); if(vlist) vlist.innerHTML="";
+      var icons=["⭐","🌟","✨","🎉","🏆","💪","🎯","🔥","👏","🌈"];
+      state.victoires.forEach(function(txt){ var item=document.createElement("div"); item.className="victoire-item"; var ic=document.createElement("span"); ic.style.fontSize="16px"; ic.textContent=icons[Math.floor(Math.random()*icons.length)]; var sp=document.createElement("span"); sp.style.flex="1"; sp.textContent=txt; var del=document.createElement("span"); del.className="vi-del"; del.textContent="✕"; del.onclick=function(){ item.remove(); saveState(); }; item.appendChild(ic); item.appendChild(sp); item.appendChild(del); if(vlist) vlist.appendChild(item); });
+    }
+    if(state.todos&&state.todos.length){
+      var tlist=document.getElementById("todo-list"); if(tlist) tlist.innerHTML="";
+      state.todos.forEach(function(t){ var item=document.createElement("div"); item.className="todo-item"+(t.done?" done":""); var cb=document.createElement("div"); cb.className="todo-cb"; cb.textContent="✓"; var txt=document.createElement("span"); txt.className="ti-txt"; txt.textContent=t.text; var del=document.createElement("span"); del.className="ti-del"; del.textContent="✕"; del.onclick=function(e){ e.stopPropagation(); item.remove(); saveState(); }; item.appendChild(cb); item.appendChild(txt); item.appendChild(del); item.onclick=function(){ this.classList.toggle("done"); if(this.classList.contains("done")) launchConfetti(); saveState(); }; if(tlist) tlist.appendChild(item); });
+    }
+    if(state.secrets){ document.querySelectorAll(".secret-env").forEach(function(env,i){ if(state.secrets[i]){ env.classList.add("opened"); var m=env.querySelector(".se-msg"); var l=env.querySelector(".se-label"); if(m) m.style.display="block"; if(l){ l.style.fontWeight="600"; l.style.color="var(--sage)"; } } }); }
+  } catch(e){ console.warn("Load failed:",e); }
+}
+
+// INIT
+initStreak();
+loadState();
+updateHomeXP();
+buildCitationsBoard();
+</script>
+</body>
+</html>
