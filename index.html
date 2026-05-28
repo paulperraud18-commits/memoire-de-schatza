@@ -2251,14 +2251,24 @@ function paulSendMessage() {
 (function(){
   function checkHash() {
     if (window.location.hash === "#paul") {
-      document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); v.style.display="none"; });
+      document.querySelectorAll(".view").forEach(function(v){
+        v.classList.remove("active");
+        v.style.display = "none";
+      });
       var ps = document.getElementById("view-paul-sender");
-      ps.style.display = "flex";
-      ps.classList.add("active");
+      if (ps) {
+        ps.style.display = "flex";
+        ps.classList.add("active");
+      }
     }
   }
   window.addEventListener("hashchange", checkHash);
-  checkHash();
+  // Wait for full DOM load before checking hash
+  if (document.readyState === "complete") {
+    checkHash();
+  } else {
+    window.addEventListener("load", checkHash);
+  }
 })();
 
 // NTFY INCOMING MESSAGES (messages de Paul → Schatza)
