@@ -537,21 +537,21 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 .rb-desc { font-size: 10px; color: var(--ink3); line-height: 1.3; }
 
 /* ── TOAST & EASTER EGG ── */
-#surprise-toast { position: fixed; top: 20px; right: 20px; z-index: 300; background: var(--paper); border: 1.5px solid var(--terr); border-radius: var(--r); padding: 14px 18px; max-width: 270px; box-shadow: 0 6px 24px rgba(139,58,30,0.14); display: none; animation: toastIn .4s cubic-bezier(.34,1.56,.64,1) both; }
-@keyframes toastIn { from { opacity:0; transform:translateY(-14px) scale(0.9); } to { opacity:1; transform:none; } }
-.toast-head { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
-.toast-icon { font-size: 18px; }
-.toast-from { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--terr); }
-.toast-msg { font-family: var(--serif); font-size: 13px; font-style: italic; color: var(--ink); line-height: 1.55; }
-.toast-close { position: absolute; top: 8px; right: 10px; font-size: 11px; color: var(--ink3); cursor: pointer; }
 
-#easter-egg { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(250,247,241,0.97); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
-.egg-inner { animation: eggPop .5s cubic-bezier(.34,1.56,.64,1) both; }
-@keyframes eggPop { from { opacity:0; transform:scale(0.5) rotate(-6deg); } to { opacity:1; transform:none; } }
-.egg-img { width: 180px; border-radius: 14px; margin-bottom: 22px; box-shadow: 0 14px 40px rgba(139,58,30,0.18); }
-.egg-title { font-family: var(--serif); font-size: 32px; font-weight: 600; color: var(--terr); margin-bottom: 10px; }
-.egg-msg { font-size: 15px; color: var(--ink2); max-width: 380px; line-height: 1.75; }
-.egg-hint { font-size: 11px; color: var(--ink3); margin-top: 12px; }
+ to { opacity:1; transform:none; } }
+
+
+
+
+
+
+
+
+ to { opacity:1; transform:none; } }
+
+
+
+
 
 /* ── CONFETTI ── */
 .confetti-piece { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 9999; animation: confettiFall 1.4s ease-in forwards; }
@@ -753,20 +753,8 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 <div id="mb-overlay" onclick="mbToggle()"></div>
 <div id="save-indicator">&#10003; Sauvegardé</div>
 
-<!-- TOAST -->
-<div id="surprise-toast">
-  <div class="toast-head"><span class="toast-icon">💌</span><span class="toast-from">Message de Paul</span></div>
-  <div class="toast-msg" id="toast-msg"></div>
-  <span class="toast-close" onclick="document.getElementById('surprise-toast').style.display='none'">&#10005;</span>
-</div>
-
-<!-- EASTER EGG -->
-<div id="easter-egg" onclick="this.style.display='none'">
-  <div class="egg-inner">
-    <img class="egg-img" src="https://upload.wikimedia.org/wikipedia/en/3/3b/Mr_Potato_Head_toy.jpg" alt="Monsieur Patate"/>
-    <div class="egg-title">🥔 Félicitations Schatza !</div>
-    <div class="egg-msg">Le mémoire est terminé !<br>Monsieur Patate est fier de toi.<br><strong>Dr. Schatza, Experte CBM.</strong></div>
-    <div class="egg-hint">Clique n'importe où pour fermer</div>
+    
+    
   </div>
 </div>
 
@@ -1504,7 +1492,6 @@ function openSection(section) {
   document.getElementById("view-" + section).classList.add("active");
   currentSection = section;
   window.scrollTo(0,0);
-  maybeSurprise(section);
 }
 
 function goHome() {
@@ -2086,7 +2073,7 @@ function checkRewards(pomos){
   if(pomos>=1) unlock("rew-pomo1"); if(pomos>=5) unlock("rew-pomo5"); if(pomos>=25) unlock("rew-pomo25");
   if(currentStreak>=3) unlock("rew-streak3"); if(currentStreak>=7) unlock("rew-streak7");
   var s=getFlowerStage(pomos); if(s>=2) unlock("rew-flower2");
-  if(s>=4){ unlock("rew-flower4"); setTimeout(function(){ document.getElementById("easter-egg").style.display="flex"; },400); }
+  if(s>=4){ unlock("rew-flower4"); setTimeout(function(){ },400); }
   var v=document.querySelectorAll("#victoire-list .victoire-item").length; if(v>=5) unlock("rew-victoire5");
 }
 
@@ -2111,19 +2098,7 @@ function toggleDefi(el){ el.classList.toggle("done"); if(el.classList.contains("
 
 
 // SURPRISE
-var surpriseMsgs=["Tu fais quelque chose d'important. Ne l'oublie pas. 🧡","Schatza. Je pense a toi. Continue. 💪","Chaque mot compte. Meme les mauvais. Ils font avancer.","Si Meyer voyait ce que tu fais, il serait impressionne. 🎹","Tu es plus proche de la fin que tu ne le crois. 🌸","Pause ? Ok. Mais reviens. Le memoire a besoin de toi.","Une chercheuse serieuse avec un beau sourire. C'est toi. 🌟"];
-var surpriseCount=0,lastSurprisePage="";
-function maybeSurprise(pageId){
-  if(pageId===lastSurprisePage) return;
-  lastSurprisePage=pageId; surpriseCount++;
-  if(surpriseCount<2||Math.random()>0.25) return;
-  var toast=document.getElementById("surprise-toast"); var msgEl=document.getElementById("toast-msg");
-  if(!toast||!msgEl) return;
-  msgEl.textContent=surpriseMsgs[Math.floor(Math.random()*surpriseMsgs.length)];
-  toast.style.display="block"; toast.style.animation="none"; void toast.offsetWidth;
-  toast.style.animation="toastIn .4s cubic-bezier(.34,1.56,.64,1) both";
-  setTimeout(function(){ toast.style.opacity="0"; toast.style.transition="opacity .5s"; setTimeout(function(){ toast.style.display="none"; toast.style.opacity=""; toast.style.transition=""; },500); },5000);
-}
+
 
 
 // WHEEL CANVAS
