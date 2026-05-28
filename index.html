@@ -753,9 +753,73 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
 
 
+
+/* ── LOGIN SCREEN ── */
+#login-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+#login-screen.hidden { display: none; }
+.login-box {
+  width: 100%; max-width: 380px;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+}
+.login-avatar {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--terr); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 26px; font-weight: 600;
+  margin-bottom: 18px;
+}
+.login-title {
+  font-family: var(--serif); font-size: 22px; font-style: italic;
+  color: #fff; margin-bottom: 6px; text-align: center;
+}
+.login-sub {
+  font-size: 12px; color: rgba(255,255,255,0.35);
+  margin-bottom: 28px; text-align: center;
+}
+.login-field {
+  width: 100%; background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: var(--r2); padding: 12px 16px;
+  font-size: 15px; color: #fff; font-family: var(--ui);
+  margin-bottom: 10px; outline: none; transition: border-color .2s;
+}
+.login-field:focus { border-color: rgba(139,58,30,0.8); }
+.login-field::placeholder { color: rgba(255,255,255,0.22); }
+.login-btn {
+  width: 100%; padding: 14px;
+  background: var(--terr); color: #fff; border: none;
+  border-radius: var(--r2); font-size: 15px;
+  font-family: var(--ui); font-weight: 500;
+  cursor: pointer; margin-top: 4px; transition: opacity .15s;
+}
+.login-btn:hover { opacity: .85; }
+.login-error {
+  font-size: 12px; color: #f08070;
+  margin-top: 10px; text-align: center;
+  min-height: 18px; transition: opacity .3s;
+}
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-avatar">🌸</div>
+    <div class="login-title">Mémoire de Schatza</div>
+    <div class="login-sub">Connexion requise</div>
+    <input class="login-field" type="text"     id="login-user" placeholder="Identifiant"    autocomplete="username"  />
+    <input class="login-field" type="password" id="login-pass" placeholder="Mot de passe"   autocomplete="current-password" onkeydown="if(event.key==='Enter') checkLogin()" />
+    <button class="login-btn" onclick="checkLogin()">Entrer</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
 
 
 
@@ -1290,6 +1354,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
           <div class="sec"><div class="sec-label sage">Ce que Pauline a identifié</div><div class="sec-line"></div></div>
           <div class="pquote">
             <p>Eine Lücke im aktuellen Forschungsstand stellt die konkrete Umsetzung des Konzept im schulischen Umfeld, wie auch die subjektive Perspektive von Musiklehrer:innen und -therapeut:innen dar.</p>
+            <div class="tr"><span class="tr-lbl">Traduction fidèle</span>Une lacune dans l'état actuel de la recherche est représentée par la mise en œuvre concrète du concept en milieu scolaire, ainsi que par la perspective subjective des enseignants en musique et des musicothérapeutes qui proposent ces dispositifs dans la vie scolaire quotidienne.</div>
             <div class="src">Staatsexamensarbeit_, chapitre 5</div>
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
@@ -2286,6 +2351,37 @@ loadState();
 if(document.getElementById("wheelCanvas")) initWheelOnLoad();
 updateHomeXP();
 buildCitationsBoard();
+
+// ── LOGIN ──
+// ⚠️ Modifie ces deux valeurs pour personnaliser l'accès
+var LOGIN_USER = "schatza";
+var LOGIN_PASS = "memoire2026";
+
+function checkLogin() {
+  var u = document.getElementById('login-user').value.trim();
+  var p = document.getElementById('login-pass').value;
+  var err = document.getElementById('login-error');
+  if (u === LOGIN_USER && p === LOGIN_PASS) {
+    document.getElementById('login-screen').classList.add('hidden');
+    try { sessionStorage.setItem('auth', '1'); } catch(e) {}
+  } else {
+    err.textContent = 'Identifiant ou mot de passe incorrect.';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+    setTimeout(function(){ err.textContent = ''; }, 3000);
+  }
+}
+
+// Check if already authenticated this session
+(function(){
+  try {
+    if (sessionStorage.getItem('auth') === '1') {
+      var ls = document.getElementById('login-screen');
+      if (ls) ls.classList.add('hidden');
+    }
+  } catch(e) {}
+})();
+
 </script>
 </body>
 </html>
