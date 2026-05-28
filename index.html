@@ -85,6 +85,7 @@ body.panic-max  { --paper2: #f5cfc0; --paper: #fff0e8; }
   max-width: 900px;
   position: relative;
   z-index: 1;
+  margin: 0 auto;
 }
 
 .home-header {
@@ -324,12 +325,8 @@ body.panic-max  { --paper2: #f5cfc0; --paper: #fff0e8; }
 .page.active { display: block; }
 
 /* ── HERO ── */
-.hero {
-  padding: 44px 48px 32px;
-  border-bottom: 1px solid var(--line2);
-  background: var(--paper);
-  position: relative; overflow: hidden;
-}
+.hero { padding: 44px 0 32px; border-bottom: 1px solid var(--line2); background: var(--paper); position: relative; overflow: hidden; }
+.hero-inner { max-width: 860px; margin: 0 auto; padding: 0 48px; }
 .hero::after {
   content: '';
   position: absolute; right: -30px; top: -30px;
@@ -349,7 +346,7 @@ body.panic-max  { --paper2: #f5cfc0; --paper: #fff0e8; }
 .hero p { font-size: 14px; color: var(--ink2); max-width: 480px; line-height: 1.75; }
 
 /* ── CONTENT ── */
-.content { padding: 36px 48px; max-width: 860px; }
+.content { padding: 36px 48px; max-width: 860px; margin: 0 auto; }
 
 /* ── SECTION ── */
 .sec { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; margin-top: 32px; }
@@ -450,17 +447,6 @@ ul.dlist li strong { color: var(--ink); font-weight: 500; }
 .panic-val { font-family: var(--serif); font-size: 17px; font-weight: 600; color: var(--terr); }
 .panic-emojis { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink3); margin-top: 5px; }
 input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
-
-/* ── CITATION BOX ── */
-.citation-box { background: var(--terr-bg); border: 1px solid rgba(139,58,30,0.18); border-radius: var(--r); padding: 20px 24px; margin-bottom: 12px; }
-.citation-text { font-family: var(--serif); font-size: 16px; font-style: italic; color: var(--ink); line-height: 1.6; margin-bottom: 14px; min-height: 48px; transition: opacity .3s; }
-
-/* ── JPP ── */
-.jpp-wrap { text-align: center; padding: 28px; background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); margin-bottom: 12px; }
-.jpp-btn { background: var(--terr); color: #fff; border: none; border-radius: 8px; padding: 14px 32px; font-size: 16px; cursor: pointer; font-family: var(--serif); font-style: italic; font-weight: 600; transition: all .2s; }
-.jpp-btn:hover { transform: scale(1.04); }
-.jpp-msg { font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--terr); margin-top: 14px; min-height: 22px; transition: opacity .4s; opacity: 0; }
-.jpp-msg.show { opacity: 1; }
 
 /* ── WHEEL ── */
 .wheel-wrap { background: var(--paper); border: 1px solid var(--line2); border-radius: var(--r); padding: 22px; text-align: center; margin-bottom: 12px; }
@@ -859,7 +845,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- SURVIE -->
       <div class="page active" id="page-survie">
-        <div class="hero"><div class="hero-chip">Espace survie</div><h1>Schatza, <em>tu gères</em> 💪</h1><p>Ton kit émotionnel. Panicomètre, citations, bouton d'urgence et micro-victoires.</p></div>
+        <div class="hero"><div class="hero-inner"><div class="hero-chip">Espace survie</div><h1>Schatza, <em>tu gères</em> 💪</h1><p>Ton kit émotionnel. Panicomètre, citations, bouton d'urgence et micro-victoires.</p></div></div>
         <div class="content">
           <div class="sec"><div class="sec-label">🎯 Panicomètre</div><div class="sec-line"></div></div>
           <div class="panic-wrap">
@@ -867,20 +853,16 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
             <input type="range" min="0" max="10" value="3" id="panic-slider" oninput="updatePanic(this.value)"/>
             <div class="panic-emojis"><span>😌 Zen</span><span>😤 Tendue</span><span>😰 Panique</span><span>🔥 AAAH</span></div>
           </div>
-          <div class="sec"><div class="sec-label">💬 Citations de survie</div><div class="sec-line"></div></div>
-          <div class="citation-box">
-            <div class="citation-text" id="citation-text">« Chaque page écrite est une page de moins à écrire. »</div>
-            <button class="btn btn-terr" id="citation-btn">🎲 Nouvelle citation</button>
-          </div>
-          <div class="sec"><div class="sec-label">😤 Bouton d'urgence</div><div class="sec-line"></div></div>
-          <div class="jpp-wrap">
-            <button class="jpp-btn" id="jpp-btn">J'EN PEUX PLUS</button>
-            <div class="jpp-msg" id="jpp-msg"></div>
-          </div>
           <div class="sec"><div class="sec-label">🎲 Que faire quand je procrastine ?</div><div class="sec-line"></div></div>
-          <div class="wheel-wrap">
-            <div class="wheel-result" id="wheel-result">Clique pour savoir ce que tu dois faire au lieu de procrastiner…</div>
-            <button class="btn btn-ochre" id="wheel-btn">🎲 Tourner la roue</button>
+          <div style="display:flex;flex-direction:column;align-items:center;padding:0.5rem 0 1rem;gap:1rem;">
+            <div style="position:relative;width:320px;height:320px;">
+              <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:10;font-size:26px;line-height:1;color:var(--terr);">▼</div>
+              <canvas id="wheelCanvas" width="320" height="320" style="border-radius:50%;cursor:pointer;"></canvas>
+            </div>
+            <div style="min-height:48px;text-align:center;max-width:300px;">
+              <p id="wheel-result-text" style="font-size:14px;color:var(--ink3);font-style:italic;margin:0;">Clique sur la roue pour la faire tourner</p>
+            </div>
+            <button class="btn btn-ochre" onclick="spinWheelMain()" id="wheel-spin-btn">🎲 Tourner</button>
           </div>
           <div class="sec"><div class="sec-label">🏆 Micro-victoires</div><div class="sec-line"></div></div>
           <div class="vict-row">
@@ -904,7 +886,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
             <!-- SEANCES -->
       <div class="page" id="page-seances">
-        <div class="hero"><div class="hero-chip">Séances de travail</div><h1>Travaille <em>à ton rythme</em></h1><p>Lance une séance, note ton objectif et ton niveau de stress. L'historique garde tout en mémoire.</p></div>
+        <div class="hero"><div class="hero-inner"><div class="hero-chip">Séances de travail</div><h1>Travaille <em>à ton rythme</em></h1><p>Lance une séance, note ton objectif et ton niveau de stress. L'historique garde tout en mémoire.</p></div></div>
         <div class="content">
 
           <!-- STEP INDICATOR -->
@@ -979,7 +961,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
 <!-- PAUL -->
       <div class="page" id="page-paul">
-        <div class="hero"><div class="hero-chip">Logistique amoureuse</div><h1>🍕 Commande <em>ton Paul</em></h1><p>Livraison express. Stocks illimités. Satisfait ou câliné.</p></div>
+        <div class="hero"><div class="hero-inner"><div class="hero-chip">Logistique amoureuse</div><h1>🍕 Commande <em>ton Paul</em></h1><p>Livraison express. Stocks illimités. Satisfait ou câliné.</p></div></div>
         <div class="content">
           <div class="paul-grid">
             <div class="paul-card"><h4>☕ Café livré</h4><p>Un café chaud posé à côté de l'ordi sans bruit ni interruption.</p><button class="btn btn-terr paul-order-btn">Commander</button><div class="paul-ordered">✓ En route — dans 3 min ☕</div></div>
@@ -995,7 +977,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- EXTRAS -->
       <div class="page" id="page-extras">
-        <div class="hero"><div class="hero-chip">Extras</div><h1>Ton jardin <em>secret</em> 🌸</h1><p>Fleur, streak, citations favorites, défis communs et récompenses.</p></div>
+        <div class="hero"><div class="hero-inner"><div class="hero-chip">Extras</div><h1>Ton jardin <em>secret</em> 🌸</h1><p>Fleur, streak, citations favorites, défis communs et récompenses.</p></div></div>
         <div class="content">
           <div class="sec"><div class="sec-label">🌸 Fleur virtuelle</div><div class="sec-line"></div></div>
           <div class="flower-stage">
@@ -1004,7 +986,73 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
               <g id="fl-1" style="display:none"><rect x="58" y="90" width="4" height="50" rx="2" fill="#5a9060"/><ellipse cx="60" cy="145" rx="18" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="50" cy="105" rx="10" ry="6" fill="#6aaa70" transform="rotate(-20,50,105)"/></g>
               <g id="fl-2" style="display:none"><rect x="58" y="75" width="4" height="65" rx="2" fill="#5a9060"/><ellipse cx="60" cy="148" rx="20" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="46" cy="100" rx="12" ry="7" fill="#6aaa70" transform="rotate(-30,46,100)"/><ellipse cx="74" cy="108" rx="12" ry="7" fill="#6aaa70" transform="rotate(20,74,108)"/><ellipse cx="60" cy="72" rx="10" ry="14" fill="#e87090"/></g>
               <g id="fl-3" style="display:none"><rect x="58" y="70" width="4" height="70" rx="2" fill="#5a9060"/><ellipse cx="60" cy="148" rx="22" ry="8" fill="#8a7050" opacity="0.4"/><ellipse cx="44" cy="95" rx="13" ry="7" fill="#6aaa70" transform="rotate(-35,44,95)"/><ellipse cx="76" cy="103" rx="13" ry="7" fill="#6aaa70" transform="rotate(25,76,103)"/><circle cx="60" cy="55" r="16" fill="#f0b0c0"/><circle cx="60" cy="40" r="8" fill="#f8d0a0"/><circle cx="48" cy="50" r="6" fill="#f0b0c0"/><circle cx="72" cy="50" r="6" fill="#f0b0c0"/><circle cx="50" cy="65" r="6" fill="#f0b0c0"/><circle cx="70" cy="65" r="6" fill="#f0b0c0"/><circle cx="60" cy="55" r="5" fill="#f8e040"/></g>
-              <g id="fl-4" style="display:none"><rect x="58" y="68" width="4" height="72" rx="2" fill="#4a8050"/><ellipse cx="60" cy="148" rx="24" ry="9" fill="#8a7050" opacity="0.4"/><ellipse cx="42" cy="93" rx="15" ry="8" fill="#5aaa60" transform="rotate(-35,42,93)"/><ellipse cx="78" cy="100" rx="15" ry="8" fill="#5aaa60" transform="rotate(25,78,100)"/><circle cx="60" cy="50" r="20" fill="#ffb0d0" opacity="0.6"/><circle cx="60" cy="32" r="10" fill="#ffd0e8"/><circle cx="44" cy="44" r="9" fill="#ffc0d8"/><circle cx="76" cy="44" r="9" fill="#ffc0d8"/><circle cx="44" cy="62" r="9" fill="#ffc0d8"/><circle cx="76" cy="62" r="9" fill="#ffc0d8"/><circle cx="60" cy="50" r="10" fill="#ff90b8"/><circle cx="60" cy="50" r="6" fill="#ffe060"/><text x="28" y="28" font-size="12">✨</text><text x="82" y="22" font-size="10">✨</text></g>
+              <g id="fl-4" style="display:none">
+  <!-- sol -->
+  <ellipse cx="60" cy="148" rx="30" ry="10" fill="#8a7050" opacity="0.4"/>
+  <!-- tige centrale -->
+  <rect x="58" y="68" width="4" height="80" rx="2" fill="#4a8050"/>
+  <!-- tige gauche -->
+  <path d="M60,120 Q38,110 30,75" fill="none" stroke="#4a8050" stroke-width="4" stroke-linecap="round"/>
+  <!-- tige droite -->
+  <path d="M60,115 Q82,105 90,72" fill="none" stroke="#4a8050" stroke-width="4" stroke-linecap="round"/>
+  <!-- tige petite gauche -->
+  <path d="M60,130 Q25,122 18,95" fill="none" stroke="#5a9060" stroke-width="3" stroke-linecap="round"/>
+  <!-- tige petite droite -->
+  <path d="M60,128 Q95,118 102,92" fill="none" stroke="#5a9060" stroke-width="3" stroke-linecap="round"/>
+  <!-- feuilles -->
+  <ellipse cx="44" cy="108" rx="14" ry="7" fill="#5aaa60" transform="rotate(-30,44,108)"/>
+  <ellipse cx="76" cy="104" rx="14" ry="7" fill="#5aaa60" transform="rotate(25,76,104)"/>
+  <!-- fleur centrale (grande) -->
+  <circle cx="60" cy="52" r="18" fill="#ffb0d0" opacity="0.55"/>
+  <circle cx="60" cy="36" r="9"  fill="#ffd0e8"/>
+  <circle cx="46" cy="46" r="8"  fill="#ffc0d8"/>
+  <circle cx="74" cy="46" r="8"  fill="#ffc0d8"/>
+  <circle cx="46" cy="62" r="8"  fill="#ffc0d8"/>
+  <circle cx="74" cy="62" r="8"  fill="#ffc0d8"/>
+  <circle cx="60" cy="52" r="9"  fill="#ff80a8"/>
+  <circle cx="60" cy="52" r="5"  fill="#ffe050"/>
+  <!-- fleur gauche -->
+  <circle cx="26" cy="68" r="13" fill="#c0d0ff" opacity="0.6"/>
+  <circle cx="26" cy="56" r="7"  fill="#d8e4ff"/>
+  <circle cx="15" cy="65" r="6"  fill="#c8d8ff"/>
+  <circle cx="37" cy="65" r="6"  fill="#c8d8ff"/>
+  <circle cx="15" cy="77" r="6"  fill="#c8d8ff"/>
+  <circle cx="37" cy="77" r="6"  fill="#c8d8ff"/>
+  <circle cx="26" cy="68" r="7"  fill="#9090e8"/>
+  <circle cx="26" cy="68" r="4"  fill="#ffe050"/>
+  <!-- fleur droite -->
+  <circle cx="94" cy="64" r="13" fill="#ffd0a0" opacity="0.6"/>
+  <circle cx="94" cy="52" r="7"  fill="#ffe4c0"/>
+  <circle cx="83" cy="61" r="6"  fill="#ffd8b0"/>
+  <circle cx="105" cy="61" r="6" fill="#ffd8b0"/>
+  <circle cx="83" cy="73" r="6"  fill="#ffd8b0"/>
+  <circle cx="105" cy="73" r="6" fill="#ffd8b0"/>
+  <circle cx="94" cy="64" r="7"  fill="#e88030"/>
+  <circle cx="94" cy="64" r="4"  fill="#ffe050"/>
+  <!-- petite fleur gauche -->
+  <circle cx="14" cy="90" r="9"  fill="#d0f0d0" opacity="0.7"/>
+  <circle cx="14" cy="82" r="5"  fill="#e0f8e0"/>
+  <circle cx="6"  cy="88" r="5"  fill="#d8f4d8"/>
+  <circle cx="22" cy="88" r="5"  fill="#d8f4d8"/>
+  <circle cx="6"  cy="97" r="5"  fill="#d8f4d8"/>
+  <circle cx="22" cy="97" r="5"  fill="#d8f4d8"/>
+  <circle cx="14" cy="90" r="5"  fill="#60b860"/>
+  <circle cx="14" cy="90" r="3"  fill="#ffe050"/>
+  <!-- petite fleur droite -->
+  <circle cx="106" cy="88" r="9" fill="#ffd0f0" opacity="0.7"/>
+  <circle cx="106" cy="80" r="5" fill="#ffe0f8"/>
+  <circle cx="98"  cy="86" r="5" fill="#ffd8f0"/>
+  <circle cx="114" cy="86" r="5" fill="#ffd8f0"/>
+  <circle cx="98"  cy="96" r="5" fill="#ffd8f0"/>
+  <circle cx="114" cy="96" r="5" fill="#ffd8f0"/>
+  <circle cx="106" cy="88" r="5" fill="#e060b8"/>
+  <circle cx="106" cy="88" r="3" fill="#ffe050"/>
+  <!-- sparkles -->
+  <text x="52" y="20" font-size="10">✨</text>
+  <text x="68" y="16" font-size="8">✨</text>
+  <text x="6"  y="60" font-size="8">✨</text>
+  <text x="108" y="52" font-size="8">✨</text>
+</g>
             </svg>
             <div class="flower-name" id="flower-name">🌱 Graine</div>
             <div class="flower-desc" id="flower-desc">Lance ta première séance de travail pour faire pousser ta fleur !</div>
@@ -1012,7 +1060,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
               <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);margin-bottom:4px;"><span>Progression</span><span id="flower-pomo-label">0 séance</span></div>
               <div style="height:5px;background:var(--paper3);border-radius:3px;overflow:hidden;"><div id="flower-bar" style="height:100%;background:linear-gradient(90deg,#e87090,#f8a0c0);border-radius:3px;width:0%;transition:width .6s ease;"></div></div>
             </div>
-            <div style="font-size:11px;color:var(--ink3);" id="flower-next-hint">Prochain stade dans 3 séances</div>
+            <div style="font-size:11px;color:var(--ink3);" id="flower-next-hint">Prochain stade dans 2 séances</div>
           </div>
           <div class="sec"><div class="sec-label">🔥 Streak de travail</div><div class="sec-line"></div></div>
           <div class="streak-box"><div class="streak-num" id="streak-num">0</div><div class="streak-info"><h4 id="streak-title">Commence ton streak aujourd'hui !</h4><p id="streak-sub">Ouvre le site chaque jour pour maintenir ta flamme.</p></div><span class="streak-fire" id="streak-fire">🌱</span></div>
@@ -1063,11 +1111,11 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- ── VUE D'ENSEMBLE ── -->
       <div class="page active" id="page-overview">
-        <div class="hero">
+        <div class="hero"><div class="hero-inner">
           <div class="hero-chip sage">Vue d'ensemble</div>
           <h1>Le mémoire <em>en un coup d'œil</em></h1>
           <p>La chaîne causale, les chiffres clés et la question à laquelle tout répond.</p>
-        </div>
+        </div></div>
         <div class="content">
 
           <div class="sec"><div class="sec-label sage">La logique du mémoire</div><div class="sec-line"></div></div>
@@ -1125,11 +1173,11 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- ── LES CONCEPTS ── -->
       <div class="page" id="page-concepts">
-        <div class="hero">
+        <div class="hero"><div class="hero-inner">
           <div class="hero-chip sage">Les concepts</div>
           <h1>Les <em>grandes idées</em> du mémoire</h1>
           <p>Quatre concepts à connaître pour comprendre ce que fait Pauline.</p>
-        </div>
+        </div></div>
         <div class="content">
 
           <div class="sec"><div class="sec-label sage">1 — Le handicap complexe</div><div class="sec-line"></div></div>
@@ -1193,11 +1241,11 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- ── LA RECHERCHE ── -->
       <div class="page" id="page-recherche">
-        <div class="hero">
+        <div class="hero"><div class="hero-inner">
           <div class="hero-chip sage">La recherche existante</div>
           <h1>Ce qu'on <em>sait déjà</em></h1>
           <p>Les études existantes sur la CBM — et ce qui manque encore.</p>
-        </div>
+        </div></div>
         <div class="content">
 
           <div class="sec"><div class="sec-label sage">L'étude de référence — Bernzott (2016)</div><div class="sec-line"></div></div>
@@ -1240,11 +1288,11 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- ── LA MÉTHODE ── -->
       <div class="page" id="page-methode">
-        <div class="hero">
+        <div class="hero"><div class="hero-inner">
           <div class="hero-chip sage">La méthode</div>
           <h1>Comment <em>elle fait sa recherche</em></h1>
           <p>Le design qualitatif, les entretiens et les 4 blocs du guide.</p>
-        </div>
+        </div></div>
         <div class="content">
 
           <div class="sec"><div class="sec-label sage">Pourquoi des entretiens ?</div><div class="sec-line"></div></div>
@@ -1310,11 +1358,11 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- ── LES SOURCES ── -->
       <div class="page" id="page-sources">
-        <div class="hero">
+        <div class="hero"><div class="hero-inner">
           <div class="hero-chip sage">Sources</div>
           <h1>Les <em>références</em></h1>
           <p>Bibliographie et auteurs mentionnés dans le mémoire.</p>
-        </div>
+        </div></div>
         <div class="content">
 
           <div class="sec"><div class="sec-label sage">Références rédigées dans le document</div><div class="sec-line"></div></div>
@@ -1388,6 +1436,7 @@ function goHome() {
 }
 
 function showPage(pageId, section) {
+  if(pageId==="survie") setTimeout(function(){ if(typeof initWheelOnLoad==="function") initWheelOnLoad(); },50);
   var sidebar = document.getElementById("sidebar-" + section);
   if (sidebar) {
     sidebar.querySelectorAll(".ms-btn").forEach(function(b){ b.classList.remove("active","active-sage"); });
@@ -1451,7 +1500,7 @@ function showSaveIndicator() {
 }
 
 // PANICOMETRE
-var panicLabels = ["😌 Zen (0/10)","😌 Presque zen (1/10)","🙂 Ça va (2/10)","😌 Zen (3/10)","😐 Légère tension (4/10)","😤 Tendue (5/10)","😰 Stressée (6/10)","😰 Bien stressée (7/10)","😱 Panique (8/10)","🔥 PANIQUE TOTALE (9/10)","💀 AU SECOURS (10/10)"];
+var panicLabels = ["😌 Sérénité totale (0/10)","😌 Presque zen (1/10)","🙂 Ça va (2/10)","😌 Zen (3/10)","😐 Légère tension (4/10)","😤 Tendue (5/10)","😰 Stressée (6/10)","😰 Bien stressée (7/10)","😱 Panique (8/10)","🔥 PANIQUE TOTALE (9/10)","💀 AU SECOURS (10/10)"];
 function updatePanic(v) {
   document.getElementById("panic-val").textContent = panicLabels[v];
   document.body.classList.remove("panic-med","panic-high","panic-max");
@@ -1461,66 +1510,12 @@ function updatePanic(v) {
   saveState();
 }
 
-// CITATIONS
-var citations = [
-  "« Chaque page écrite est une page de moins à écrire. »",
-  "« Watzlawick a bien commencé quelque part lui aussi. »",
-  "« Le chapitre 4 ne se rédigera pas tout seul. Enfin si, si tu attends assez longtemps. »",
-  "« Une intro imparfaite vaut mieux qu'une intro inexistante. »",
-  "« Les chercheuses qui doutent sont les meilleures chercheuses. »",
-  "« Meyer a mis des années. Toi tu as des semaines. Tu es plus rapide que Meyer. »",
-  "« Chaque virgule compte. Tu en as déjà écrit 200. Félicitations. »",
-  "« Le mémoire ne sait pas que tu as peur de lui. Il t'attend, c'est tout. »",
-  "« Si tu lis ça, tu fais une pause. C'est bien. Bois de l'eau. »",
-  "« La communication basale dit que tout signal compte. Ta première phrase aussi. »",
-  "« Les footnotes sont des amies. Peut-être tes seules amies ce soir. »",
-  "« On ne peut pas ne pas communiquer. — Watzlawick »"
-];
-var lastCit = -1;
-function newCitation() {
-  var idx; do { idx = Math.floor(Math.random()*citations.length); } while (idx===lastCit && citations.length>1);
-  lastCit = idx;
-  var el = document.getElementById("citation-text");
-  el.style.opacity="0";
-  setTimeout(function(){ el.textContent=citations[idx]; el.style.transition="opacity .4s"; el.style.opacity="1"; }, 250);
-}
 
-// JPP
-var jppMsgs = [
-  "Normal. C'est comme ca qu'on ecrit un memoire.",
-  "C'est le signe que tu prends ca au serieux. Meyer serait fier.",
-  "Prends une grande inspiration. Expire. Recommence.",
-  "Ferme l'ordi 10 minutes. Reviens. Ca ira mieux. Peut-etre.",
-  "Tu en peux plus ? Parfait. C'est la que le bon travail commence.",
-  "Schatza. Tu as deja ecrit des choses brillantes. Ce soir c'est juste difficile.",
-  "Monsieur Patate aussi avait des jours difficiles. Il s'en est sorti."
-];
-function jpp() {
-  var msg = jppMsgs[Math.floor(Math.random()*jppMsgs.length)];
-  var el = document.getElementById("jpp-msg");
-  el.textContent=msg; el.classList.add("show");
-  launchConfetti();
-  setTimeout(function(){ el.classList.remove("show"); }, 5000);
-}
+
+
 
 // WHEEL
-var wheelOpts = [
-  "Fais 5 respirations profondes comme dans la CBM",
-  "Va te faire un cafe. C'est officiel, c'est de la recherche.",
-  "Relis ton intro une 47eme fois (ca compte)",
-  "Marche 5 minutes. Meyer a surement fait pareil.",
-  "Ouvre le chapitre 2 et lis juste la premiere phrase.",
-  "Regarde un des messages secrets de Paul",
-  "Regarde Monsieur Patate pour te motiver",
-  "Ecris UNE phrase. N'importe laquelle. Tu verras.",
-  "Fais 10 squats. Le sang doit circuler dans le cerveau.",
-  "Lance une séance de travail. Tu peux."
-];
-function spinWheel() {
-  var el = document.getElementById("wheel-result");
-  el.style.opacity="0";
-  setTimeout(function(){ el.textContent=wheelOpts[Math.floor(Math.random()*wheelOpts.length)]; el.style.transition="opacity .3s"; el.style.opacity="1"; }, 200);
-}
+
 
 // VICTOIRES
 function addVictoire() {
@@ -1677,9 +1672,9 @@ document.querySelectorAll(".secret-env").forEach(function(env){
 });
 
 // WIRE UP
-document.getElementById("citation-btn").onclick=newCitation;
-document.getElementById("jpp-btn").onclick=jpp;
-document.getElementById("wheel-btn").onclick=spinWheel;
+
+
+
 document.getElementById("victoire-btn").onclick=addVictoire;
 document.getElementById("victoire-input").addEventListener("keydown",function(e){ if(e.key==="Enter") addVictoire(); });
 (function(){ var tab=document.getElementById("todo-add-btn"); if(tab) tab.onclick=addTodo; })();
@@ -1914,11 +1909,11 @@ renderHistory();
 
 // FLOWER
 var flowerStages=[
-  {name:"🌱 Graine",desc:"Lance ta première séance pour faire pousser ta fleur !",pomosNeeded:0,next:3},
-  {name:"🌿 Pousse",desc:"Elle commence à pousser. Continue comme ça !",pomosNeeded:3,next:8},
-  {name:"🌺 Bourgeon",desc:"Un bourgeon apparait. Tu es a mi-chemin !",pomosNeeded:8,next:15},
-  {name:"🌸 Fleur",desc:"Ta fleur s'ouvre ! La regularite porte ses fruits.",pomosNeeded:15,next:25},
-  {name:"✨ Fleur epanouie",desc:"Ta fleur est magnifique. Comme toi.",pomosNeeded:25,next:25}
+  {name:"🌱 Graine",        desc:"Lance ta première séance pour faire pousser ta fleur !",     pomosNeeded:0,  next:2},
+  {name:"🌿 Pousse",        desc:"Elle commence à pousser. Continue comme ça !",               pomosNeeded:2,  next:6},
+  {name:"🌺 Bourgeon",      desc:"Un bourgeon apparaît. Tu es à mi-chemin !",                  pomosNeeded:6,  next:12},
+  {name:"🌸 Fleur",         desc:"Ta fleur s'ouvre ! La régularité porte ses fruits.",         pomosNeeded:12, next:20},
+  {name:"✨ Bouquet",        desc:"Un vrai bouquet ! Schatza, tu es une force de la nature. 🌸",pomosNeeded:20, next:20}
 ];
 var totalPomos=0;
 function getFlowerStage(p){ var s=0; for(var i=flowerStages.length-1;i>=0;i--){ if(p>=flowerStages[i].pomosNeeded){ s=i; break; } } return s; }
@@ -2029,6 +2024,89 @@ function maybeSurprise(pageId){
   setTimeout(function(){ toast.style.opacity="0"; toast.style.transition="opacity .5s"; setTimeout(function(){ toast.style.display="none"; toast.style.opacity=""; toast.style.transition=""; },500); },5000);
 }
 
+
+// WHEEL CANVAS
+(function(){
+  var wheelOptions = [
+    "Respirer\n5 fois",
+    "Caf\u00e9",
+    "Marcher\n5 min",
+    "10 squats",
+    "Lancer\nune s\u00e9ance",
+    "Boire\nde l'eau",
+    "Tel\nMimi",
+    "Tel\nMama"
+  ];
+  var wheelColors = [
+    "#8b3a1e","#3d6b52","#8a6010","#185fa5",
+    "#7b3f6e","#2d6e6e","#a32d2d","#534ab7"
+  ];
+  var wCanvas, wCtx, wAngle=0, wSpinning=false;
+  var wN = wheelOptions.length;
+  var wSlice = (2*Math.PI)/wN;
+
+  function initWheel(){
+    wCanvas = document.getElementById("wheelCanvas");
+    if(!wCanvas) return;
+    wCtx = wCanvas.getContext("2d");
+    drawWheel(wAngle);
+    wCanvas.addEventListener("click", spinWheelMain);
+  }
+
+  function drawWheel(angle){
+    if(!wCtx) return;
+    var W=wCanvas.width, H=wCanvas.height;
+    var R=W/2-6, cx=W/2, cy=H/2;
+    wCtx.clearRect(0,0,W,H);
+    wheelOptions.forEach(function(opt,i){
+      var start=angle+i*wSlice, end=start+wSlice, mid=start+wSlice/2;
+      wCtx.beginPath(); wCtx.moveTo(cx,cy);
+      wCtx.arc(cx,cy,R,start,end); wCtx.closePath();
+      wCtx.fillStyle=wheelColors[i%wheelColors.length]; wCtx.fill();
+      wCtx.strokeStyle="#fff"; wCtx.lineWidth=2.5; wCtx.stroke();
+      var tr=R*0.62;
+      wCtx.save();
+      wCtx.translate(cx+tr*Math.cos(mid), cy+tr*Math.sin(mid));
+      wCtx.rotate(mid+Math.PI/2);
+      wCtx.fillStyle="#fff"; wCtx.textAlign="center"; wCtx.textBaseline="middle";
+      var lines=opt.split("\n"), lh=15;
+      wCtx.font="500 12px system-ui,sans-serif";
+      lines.forEach(function(l,li){ wCtx.fillText(l, 0, (li-(lines.length-1)/2)*lh); });
+      wCtx.restore();
+    });
+    wCtx.beginPath(); wCtx.arc(W/2,H/2,W/2-6,0,2*Math.PI);
+    wCtx.strokeStyle="rgba(255,255,255,0.25)"; wCtx.lineWidth=3; wCtx.stroke();
+    wCtx.beginPath(); wCtx.arc(W/2,H/2,24,0,2*Math.PI);
+    wCtx.fillStyle="#fff"; wCtx.fill();
+  }
+
+  window.spinWheelMain = function(){
+    if(wSpinning) return;
+    if(!wCtx){ initWheel(); if(!wCtx) return; }
+    wSpinning=true;
+    var btn=document.getElementById("wheel-spin-btn");
+    var el=document.getElementById("wheel-result-text");
+    if(btn) btn.disabled=true;
+    if(el){ el.textContent="…"; el.style.cssText="font-size:14px;color:var(--ink3);font-style:italic;margin:0;"; }
+    var extra=6*2*Math.PI+Math.random()*2*Math.PI;
+    var from=wAngle, dur=3400, t0=performance.now();
+    function ease(t){ return 1-Math.pow(1-t,4); }
+    (function frame(now){
+      var t=Math.min((now-t0)/dur,1);
+      wAngle=from+extra*ease(t);
+      drawWheel(wAngle);
+      if(t<1){ requestAnimationFrame(frame); return; }
+      wSpinning=false;
+      if(btn) btn.disabled=false;
+      var norm=((-wAngle%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+      var selected=wheelOptions[Math.floor(norm/wSlice)%wN].replace(/\n/g," ");
+      if(el){ el.textContent=selected; el.style.cssText="font-size:16px;color:var(--ink);font-weight:500;margin:0;font-style:normal;"; }
+    })(performance.now());
+  };
+
+  window.initWheelOnLoad = initWheel;
+})();
+
 // SAVE / LOAD
 function saveState(){
   try{
@@ -2067,6 +2145,7 @@ function loadState(){
 // INIT
 initStreak();
 loadState();
+if(document.getElementById("wheelCanvas")) initWheelOnLoad();
 updateHomeXP();
 buildCitationsBoard();
 </script>
