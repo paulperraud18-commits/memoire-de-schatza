@@ -971,6 +971,13 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
             <div class="paul-card"><h4>📖 Relecteur d'urgence</h4><p>Paul relit un paragraphe et dit "c'est bien" avec conviction totale. Ou alors il relit sérieusement et donne un avis sincère. À choisir selon le mood.</p><button class="btn btn-terr paul-order-btn">Demander</button><div class="paul-ordered">✓ Envoie-moi le paragraphe 📖</div></div>
             <div class="paul-card"><h4>🎉 Célébration express</h4><p>Pour fêter une micro-victoire. Expression enthousiaste garantie.</p><button class="btn btn-terr paul-order-btn">Déclencher</button><div class="paul-ordered">✓ Dis-moi ce qu'on fête 🎉</div></div>
           </div>
+          <div class="sec"><div class="sec-label">✉️ Demande libre</div><div class="sec-line"></div></div>
+          <div style="background:var(--paper);border:1px solid var(--line2);border-radius:var(--r);padding:20px 24px;margin-bottom:12px;">
+            <p style="font-size:13px;color:var(--ink3);margin-bottom:10px;">Un besoin qui n'est pas dans la liste ? Écris-le ici.</p>
+            <textarea id="paul-libre-text" placeholder="Ex : J'ai besoin qu'on parle 5 minutes..." style="width:100%;background:var(--paper2);border:1.5px solid var(--line2);border-radius:var(--r2);padding:10px 14px;font-size:14px;color:var(--ink);font-family:var(--ui);resize:vertical;min-height:80px;margin-bottom:10px;" onfocus="this.style.borderColor='var(--terr)'" onblur="this.style.borderColor='var(--line2)'"></textarea>
+            <button class="btn btn-terr" id="paul-libre-btn" style="width:100%;">Envoyer la demande</button>
+            <div id="paul-libre-confirm" style="display:none;font-size:13px;color:var(--sage);font-weight:500;margin-top:8px;text-align:center;">✓ Demande envoyée — Paul est sur le coup !</div>
+          </div>
           <div class="card ochre" style="text-align:center;"><p>⚠️ Service disponible dans un rayon de bonne volonté. Non remboursable mais toujours de bonne foi. D'autres services sont disponibles sur demande vocale.</p></div>
         </div>
       </div>
@@ -1623,6 +1630,38 @@ function updatePomoUI(){
 })();
 
 // PAUL
+// PAUL LIBRE
+(function(){
+  function initPaulLibre(){
+    var btn = document.getElementById("paul-libre-btn");
+    if(!btn) return;
+    btn.onclick = function(){
+      var txt = document.getElementById("paul-libre-text").value.trim();
+      if(!txt) return;
+      // Send ntfy notification
+      if(typeof ntfySend === "function"){
+        ntfySend("Demande libre de Schatza", txt);
+      }
+      // Show confirmation
+      document.getElementById("paul-libre-confirm").style.display = "block";
+      btn.style.display = "none";
+      // Reset after 4s
+      setTimeout(function(){
+        document.getElementById("paul-libre-confirm").style.display = "none";
+        btn.style.display = "block";
+        document.getElementById("paul-libre-text").value = "";
+      }, 4000);
+    };
+  }
+  // Init on page load and when paul page is shown
+  var origShowPage = window.showPage;
+  window.showPage = function(pageId, section){
+    origShowPage(pageId, section);
+    if(pageId === "paul") setTimeout(initPaulLibre, 50);
+  };
+  setTimeout(initPaulLibre, 100);
+})();
+
 // NTFY NOTIFICATIONS
 var NTFY_CHANNEL = "schatza-memoire-2026";
 
@@ -2098,7 +2137,8 @@ function maybeSurprise(pageId){
       if(t<1){ requestAnimationFrame(frame); return; }
       wSpinning=false;
       if(btn) btn.disabled=false;
-      var norm=((-wAngle%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+      var arrowAngle = -Math.PI/2;
+      var norm=((arrowAngle - wAngle)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);
       var selected=wheelOptions[Math.floor(norm/wSlice)%wN].replace(/\n/g," ");
       if(el){ el.textContent=selected; el.style.cssText="font-size:16px;color:var(--ink);font-weight:500;margin:0;font-style:normal;"; }
     })(performance.now());
