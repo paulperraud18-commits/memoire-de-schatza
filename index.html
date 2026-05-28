@@ -463,16 +463,6 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 .vi-del { margin-left: auto; font-size: 11px; color: var(--ink3); cursor: pointer; opacity: .6; }
 .vi-del:hover { color: var(--terr); opacity: 1; }
 
-/* ── SECRETS ── */
-.secret-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-.secret-env { background: var(--ochre-bg); border: 1px solid rgba(138,96,16,0.25); border-radius: var(--r); padding: 16px; text-align: center; cursor: pointer; transition: all .2s; user-select: none; }
-.secret-env:hover { border-color: var(--ochre); transform: scale(1.02); }
-.secret-env.opened { background: var(--sage-bg); border-color: rgba(61,107,82,0.3); cursor: default; }
-.se-icon { font-size: 26px; display: block; margin-bottom: 6px; }
-.se-label { font-size: 11px; color: var(--ink3); }
-.se-msg { font-family: var(--serif); font-size: 12px; font-style: italic; color: var(--ink2); line-height: 1.55; display: none; margin-top: 8px; text-align: left; }
-.secret-env.opened .se-msg { display: block; }
-.secret-env.opened .se-label { font-weight: 600; color: var(--sage); }
 
 /* ── COUNTDOWN ── */
 .cd-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 8px; }
@@ -583,7 +573,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
   .hero { padding: 52px 22px 28px; }
   .content { padding: 24px 22px; }
   .home-cards { grid-template-columns: 1fr; }
-  .g2, .g3, .paul-grid, .secret-grid, .reward-grid { grid-template-columns: 1fr 1fr; }
+  .g2, .g3, .paul-grid, .reward-grid { grid-template-columns: 1fr 1fr; }
   .stats { flex-wrap: wrap; }
   .flowbar { flex-direction: column; }
   .cd-grid { grid-template-columns: repeat(2,1fr); }
@@ -887,15 +877,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
           <div class="victoire-list" id="victoire-list">
             <div class="victoire-item"><span style="font-size:16px;">⭐</span><span style="flex:1;">J'ai ouvert le document (ça compte)</span><span class="vi-del">✕</span></div>
           </div>
-          <div class="sec"><div class="sec-label">💌 Messages secrets de Paul</div><div class="sec-line"></div></div>
-          <div class="secret-grid">
-            <div class="secret-env" id="sec0"><span class="se-icon">💌</span><div class="se-label">Message #1</div><div class="se-msg">Même les jours où tu n'as écrit qu'une virgule — tu avances. Je suis là. 🧡</div></div>
-            <div class="secret-env" id="sec1"><span class="se-icon">💌</span><div class="se-label">Message #2</div><div class="se-msg">Ton mémoire parle de la musique comme langage. Toi aussi tu as un langage unique — et il est magnifique. ✨</div></div>
-            <div class="secret-env" id="sec2"><span class="se-icon">💌</span><div class="se-label">Message #3</div><div class="se-msg">Pose l'ordinateur. Bois de l'eau. Dors. Le mémoire sera encore là demain — toi aussi tu dois l'être. 🌙</div></div>
-            <div class="secret-env" id="sec3"><span class="se-icon">💌</span><div class="se-label">Message #4</div><div class="se-msg">TU VOIS ? Je te l'avais dit. Brillante. 🏆</div></div>
-            <div class="secret-env" id="sec4"><span class="se-icon">💌</span><div class="se-label">Message #5</div><div class="se-msg">À force de lire Meyer, tu le connais mieux que lui. C'est toi l'experte maintenant. 🎹</div></div>
-            <div class="secret-env" id="sec5"><span class="se-icon">💌</span><div class="se-label">Message #6</div><div class="se-msg">On fête ça comme il se doit. Fier de toi, Schatza. 🥔🎉</div></div>
-          </div>
+          
         </div>
       </div>
 
@@ -1789,17 +1771,6 @@ document.querySelectorAll(".paul-order-btn").forEach(function(btn){
   })(key);
 });
 
-// SECRETS
-document.querySelectorAll(".secret-env").forEach(function(env){
-  env.onclick=function(){
-    if(this.classList.contains("opened")) return;
-    this.classList.add("opened");
-    this.querySelector(".se-msg").style.display="block";
-    this.querySelector(".se-label").style.fontWeight="600";
-    this.querySelector(".se-label").style.color="var(--sage)";
-    saveState();
-  };
-});
 
 // WIRE UP
 
@@ -2243,11 +2214,10 @@ function saveState(){
   try{
     var victoires=[]; document.querySelectorAll("#victoire-list .victoire-item").forEach(function(item){ var sp=item.querySelectorAll("span")[1]; if(sp) victoires.push(sp.textContent); });
     var todos=[]; document.querySelectorAll("#todo-list .todo-item").forEach(function(item){ var txt=item.querySelector(".ti-txt"); if(txt) todos.push({text:txt.textContent,done:item.classList.contains("done")}); });
-    var secrets=[]; document.querySelectorAll(".secret-env").forEach(function(env){ secrets.push(env.classList.contains("opened")); });
     var state={
       panicVal:document.getElementById("panic-slider")?document.getElementById("panic-slider").value:3,
       deadline:document.getElementById("deadline-input")?document.getElementById("deadline-input").value:"",
-      pomos:totalPomos,loved:lovedCitations,victoires:victoires,todos:todos,secrets:secrets,
+      pomos:totalPomos,loved:lovedCitations,victoires:victoires,todos:todos,
     };
     localStorage.setItem("schatza_v2",JSON.stringify(state)); showSaveIndicator();
   } catch(e){ console.warn("Save failed:",e); }
@@ -2269,7 +2239,6 @@ function loadState(){
       var tlist=document.getElementById("todo-list"); if(tlist) tlist.innerHTML="";
       state.todos.forEach(function(t){ var item=document.createElement("div"); item.className="todo-item"+(t.done?" done":""); var cb=document.createElement("div"); cb.className="todo-cb"; cb.textContent="✓"; var txt=document.createElement("span"); txt.className="ti-txt"; txt.textContent=t.text; var del=document.createElement("span"); del.className="ti-del"; del.textContent="✕"; del.onclick=function(e){ e.stopPropagation(); item.remove(); saveState(); }; item.appendChild(cb); item.appendChild(txt); item.appendChild(del); item.onclick=function(){ this.classList.toggle("done"); if(this.classList.contains("done")) launchConfetti(); saveState(); }; if(tlist) tlist.appendChild(item); });
     }
-    if(state.secrets){ document.querySelectorAll(".secret-env").forEach(function(env,i){ if(state.secrets[i]){ env.classList.add("opened"); var m=env.querySelector(".se-msg"); var l=env.querySelector(".se-label"); if(m) m.style.display="block"; if(l){ l.style.fontWeight="600"; l.style.color="var(--sage)"; } } }); }
   } catch(e){ console.warn("Load failed:",e); }
 }
 
