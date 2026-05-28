@@ -740,6 +740,41 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 }
 .hs-num { font-family: var(--serif); font-size: 26px; font-weight: 600; color: var(--terr); display: block; }
 .hs-lbl { font-size: 10px; color: var(--ink3); margin-top: 3px; }
+
+/* ── INCOMING TOAST (messages de Paul) ── */
+#incoming-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r);
+  padding: 16px 22px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(30,26,20,0.25);
+  display: none;
+  animation: incomingPop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes incomingPop {
+  from { opacity:0; transform: translateX(-50%) translateY(-16px) scale(0.92); }
+  to   { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+.it-head {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.it-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--terr); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; flex-shrink: 0;
+}
+.it-from { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+.it-msg  { font-family: var(--serif); font-size: 15px; font-style: italic; color: #fff; line-height: 1.55; }
+.it-close { position: absolute; top: 10px; right: 12px; font-size: 11px; color: rgba(255,255,255,0.4); cursor: pointer; }
+.it-close:hover { color: #fff; }
 </style>
 </head>
 <body>
@@ -784,7 +819,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
         <div class="card-title">Espace Schatza</div>
         <div class="card-desc">Tout ce dont tu as besoin pour survivre à la rédaction — et même l'apprécier.</div>
         <div class="card-items">
-          <div class="card-item"><span class="ci-dot"></span>Espace survie — citations, panicomètre, JPP</div>
+          <div class="card-item"><span class="ci-dot"></span>Espace survie — panicomètre &amp; roue</div>
           <div class="card-item"><span class="ci-dot"></span>Séances de travail</div>
           <div class="card-item"><span class="ci-dot"></span>Fleur, streak & récompenses</div>
           <div class="card-item"><span class="ci-dot"></span>Commande ton Paul 🍕</div>
@@ -810,7 +845,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
     <div class="home-xp-strip">
       <div class="home-xp-inner">
         <div class="hx-avatar">S</div>
-        <span class="hx-role" id="hx-role">Apprentie chercheuse · Niv. 1</span>
+        <span class="hx-role" id="hx-role">Niv. 1</span>
         <div class="hx-bar-wrap"><div class="hx-bar" id="hx-bar" style="width:0%"></div></div>
         <span class="hx-pct" id="hx-pct">0%</span>
         <span style="font-size:18px;" id="hx-streak-fire">🌱</span>
@@ -984,7 +1019,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 
       <!-- EXTRAS -->
       <div class="page" id="page-extras">
-        <div class="hero"><div class="hero-inner"><div class="hero-chip">Extras</div><h1>Ton jardin <em>secret</em> 🌸</h1><p>Fleur, streak, citations favorites, défis communs et récompenses.</p></div></div>
+        <div class="hero"><div class="hero-inner"><div class="hero-chip">Extras</div><h1>Ton jardin <em>secret</em> 🌸</h1><p>Fleur, streak &amp; récompenses.</p></div></div>
         <div class="content">
           <div class="sec"><div class="sec-label">🌸 Fleur virtuelle</div><div class="sec-line"></div></div>
           <div class="flower-stage">
@@ -1070,7 +1105,7 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
             <div style="font-size:11px;color:var(--ink3);" id="flower-next-hint">Prochain stade dans 2 séances</div>
           </div>
           <div class="sec"><div class="sec-label">🔥 Streak de travail</div><div class="sec-line"></div></div>
-          <div class="streak-box"><div class="streak-num" id="streak-num">0</div><div class="streak-info"><h4 id="streak-title">Commence ton streak aujourd'hui !</h4><p id="streak-sub">Ouvre le site chaque jour pour maintenir ta flamme.</p></div><span class="streak-fire" id="streak-fire">🌱</span></div>
+          <div class="streak-box"><div class="streak-num" id="streak-num">0</div><div class="streak-info"><h4 id="streak-title">Commence ta série aujourd'hui !</h4><p id="streak-sub">Ouvre le site chaque jour pour maintenir ta flamme.</p></div><span class="streak-fire" id="streak-fire">🌱</span></div>
           <div class="sec"><div class="sec-label">🏅 Récompenses</div><div class="sec-line"></div></div>
           <div class="reward-grid">
             <div class="reward-badge locked" id="rew-pomo1"><span class="rb-icon">🍅</span><div class="rb-name">1ère séance</div><div class="rb-desc">1 séance de travail</div></div>
@@ -1975,7 +2010,7 @@ function onPomoComplete(){ totalPomos++; updateFlower(totalPomos,true); saveStat
 // STREAK
 var currentStreak=0;
 var streakTiers=[
-  {n:0,fire:"🌱",title:"Commence ton streak aujourd'hui !",sub:"Ouvre le site chaque jour."},
+  {n:0,fire:"🌱",title:"Commence ta série aujourd'hui !",sub:"Ouvre le site chaque jour."},
   {n:1,fire:"🔥",title:"Jour 1 — Le voyage commence !",sub:"Reviens demain."},
   {n:3,fire:"🔥",title:"Streak x3 — Tu es dans le rythme !",sub:"3 jours de suite."},
   {n:7,fire:"🔥🔥",title:"Une semaine complete !",sub:"Schatza, une semaine entiere."},
@@ -2004,13 +2039,13 @@ function renderStreak(){
 }
 
 // HOME XP
-var levels=[{xp:0,lv:1,role:"Apprentie chercheuse"},{xp:40,lv:2,role:"Exploratrice de la CBM"},{xp:80,lv:3,role:"Specialiste en devenir"},{xp:120,lv:4,role:"Chercheuse confirmee"},{xp:170,lv:5,role:"Dr. Schatza, Experte CBM"}];
+var levels=[{xp:0,lv:1},{xp:40,lv:2},{xp:80,lv:3},{xp:120,lv:4},{xp:170,lv:5}];
 function updateHomeXP(){
   var pct=Math.min(100,Math.round(totalPomos/25*100));
   var lv=levels[0]; for(var i=levels.length-1;i>=0;i--){ if(totalPomos*6>=levels[i].xp){ lv=levels[i]; break; } }
   var roleEl=document.getElementById("hx-role"); var barEl=document.getElementById("hx-bar"); var pctEl=document.getElementById("hx-pct");
   var fireEl=document.getElementById("hx-streak-fire"); var numEl=document.getElementById("hx-streak-num");
-  if(roleEl) roleEl.textContent=lv.role+" · Niv. "+lv.lv;
+  if(roleEl) roleEl.textContent="Niv. "+lv.lv;
   if(barEl) barEl.style.width=pct+"%";
   if(pctEl) pctEl.textContent=pct+"%";
   var tier=streakTiers[0]; for(var j=streakTiers.length-1;j>=0;j--){ if(currentStreak>=streakTiers[j].n){ tier=streakTiers[j]; break; } }
@@ -2181,6 +2216,108 @@ function loadState(){
     if(state.secrets){ document.querySelectorAll(".secret-env").forEach(function(env,i){ if(state.secrets[i]){ env.classList.add("opened"); var m=env.querySelector(".se-msg"); var l=env.querySelector(".se-label"); if(m) m.style.display="block"; if(l){ l.style.fontWeight="600"; l.style.color="var(--sage)"; } } }); }
   } catch(e){ console.warn("Load failed:",e); }
 }
+
+
+
+// PAUL SENDER
+function paulSendMessage() {
+  var msg = document.getElementById("paul-send-msg").value.trim();
+  if (!msg) return;
+  var btn = document.getElementById("paul-send-btn");
+  btn.disabled = true;
+  btn.textContent = "Envoi…";
+  fetch("https://ntfy.sh/schatza-memoire-2026", {
+    method: "POST",
+    headers: { "Title": "Paul", "Priority": "high", "Tags": "heart" },
+    body: msg
+  }).then(function() {
+    btn.style.display = "none";
+    document.getElementById("paul-send-confirm").style.display = "block";
+    setTimeout(function() {
+      document.getElementById("paul-send-msg").value = "";
+      btn.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Envoyer 💌";
+      document.getElementById("paul-send-confirm").style.display = "none";
+    }, 3000);
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = "Envoyer 💌";
+    alert("Erreur réseau — vérifie ta connexion.");
+  });
+}
+
+// Hash-based routing for paul sender
+(function(){
+  function checkHash() {
+    if (window.location.hash === "#paul") {
+      document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); v.style.display="none"; });
+      var ps = document.getElementById("view-paul-sender");
+      ps.style.display = "flex";
+      ps.classList.add("active");
+    }
+  }
+  window.addEventListener("hashchange", checkHash);
+  checkHash();
+})();
+
+// NTFY INCOMING MESSAGES (messages de Paul → Schatza)
+(function(){
+  var NTFY_CH = "schatza-memoire-2026";
+  var es = null;
+  var reconnectTimer = null;
+
+  function showIncoming(msg) {
+    var toast = document.getElementById("incoming-toast");
+    var msgEl = document.getElementById("incoming-msg");
+    if (!toast || !msgEl) return;
+    msgEl.textContent = msg;
+    toast.style.display = "block";
+    toast.style.animation = "none";
+    void toast.offsetWidth;
+    toast.style.animation = "incomingPop .4s cubic-bezier(.34,1.56,.64,1) both";
+    // Auto-close after 8s
+    setTimeout(function() {
+      toast.style.opacity = "0";
+      toast.style.transition = "opacity .5s";
+      setTimeout(function() {
+        toast.style.display = "none";
+        toast.style.opacity = "";
+        toast.style.transition = "";
+      }, 500);
+    }, 8000);
+  }
+
+  function connect() {
+    try {
+      es = new EventSource("https://ntfy.sh/" + NTFY_CH + "/sse");
+      es.onmessage = function(e) {
+        try {
+          var data = JSON.parse(e.data);
+          // Only show messages that come FROM Paul (not sent by the site itself)
+          // ntfy messages sent by the site have title set; incoming from Paul app won't
+          if (data.event === "message" && data.message) {
+            var title = data.title || "";
+            // Only show if sent by Paul (title "Paul" or empty) — ignore site's own notifications
+            if (title === "Paul" || title === "" || title === "Message de Paul") {
+              showIncoming(data.message);
+            }
+          }
+        } catch(err) {}
+      };
+      es.onerror = function() {
+        es.close();
+        // Reconnect after 10s
+        reconnectTimer = setTimeout(connect, 10000);
+      };
+    } catch(err) {
+      console.warn("Ntfy SSE error:", err);
+    }
+  }
+
+  // Start listening
+  connect();
+})();
 
 // INIT
 initStreak();
