@@ -775,6 +775,8 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
 .it-msg  { font-family: var(--serif); font-size: 15px; font-style: italic; color: #fff; line-height: 1.55; }
 .it-close { position: absolute; top: 10px; right: 12px; font-size: 11px; color: rgba(255,255,255,0.4); cursor: pointer; }
 .it-close:hover { color: #fff; }
+#view-paul-sender { display: none; }
+#view-paul-sender.active { display: flex !important; }
 </style>
 </head>
 <body>
@@ -2251,24 +2253,21 @@ function paulSendMessage() {
 (function(){
   function checkHash() {
     if (window.location.hash === "#paul") {
+      // Hide all views
       document.querySelectorAll(".view").forEach(function(v){
         v.classList.remove("active");
-        v.style.display = "none";
       });
+      // Also hide home specifically
+      var home = document.getElementById("view-home");
+      if (home) home.classList.remove("active");
+      // Show paul sender
       var ps = document.getElementById("view-paul-sender");
-      if (ps) {
-        ps.style.display = "flex";
-        ps.classList.add("active");
-      }
+      if (ps) ps.classList.add("active");
     }
   }
   window.addEventListener("hashchange", checkHash);
-  // Wait for full DOM load before checking hash
-  if (document.readyState === "complete") {
-    checkHash();
-  } else {
-    window.addEventListener("load", checkHash);
-  }
+  window.addEventListener("DOMContentLoaded", checkHash);
+  window.addEventListener("load", checkHash);
 })();
 
 // NTFY INCOMING MESSAGES (messages de Paul → Schatza)
