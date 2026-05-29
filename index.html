@@ -1059,12 +1059,12 @@ input[type=range] { width: 100%; cursor: pointer; accent-color: var(--terr); }
           <div class="sec"><div class="sec-label">🏅 Récompenses</div><div class="sec-line"></div></div>
           <div class="reward-grid">
             <div class="reward-badge locked" id="rew-pomo1"><span class="rb-icon">🍅</span><div class="rb-name">1ère séance</div><div class="rb-desc">1 séance de travail</div></div>
-            <div class="reward-badge locked" id="rew-pomo5"><span class="rb-icon">🍅🍅</span><div class="rb-name">5 séances</div><div class="rb-desc">5 séances de travail</div></div>
-            <div class="reward-badge locked" id="rew-pomo25"><span class="rb-icon">🏆</span><div class="rb-name">25 séances</div><div class="rb-desc">Chercheuse sérieuse !</div></div>
+            <div class="reward-badge locked" id="rew-pomo5"><span class="rb-icon">💆</span><div class="rb-name">5 séances</div><div class="rb-desc">Tu as gagné un massage 💆</div></div>
+            <div class="reward-badge locked" id="rew-pomo25"><span class="rb-icon">☕</span><div class="rb-name">25 séances</div><div class="rb-desc">Un verre dans un café 🥂</div></div>
             <div class="reward-badge locked" id="rew-streak3"><span class="rb-icon">🔥</span><div class="rb-name">Streak x3</div><div class="rb-desc">3 jours de suite</div></div>
             <div class="reward-badge locked" id="rew-streak7"><span class="rb-icon">🔥🔥</span><div class="rb-name">Streak x7</div><div class="rb-desc">Une semaine !</div></div>
             <div class="reward-badge locked" id="rew-flower2"><span class="rb-icon">🌿</span><div class="rb-name">Pousse</div><div class="rb-desc">Fleur stade 2</div></div>
-            <div class="reward-badge locked" id="rew-flower4"><span class="rb-icon">🌸</span><div class="rb-name">Fleur épanouie</div><div class="rb-desc">Stade final</div></div>
+            <div class="reward-badge locked" id="rew-flower4"><span class="rb-icon">🍽️</span><div class="rb-name">Bouquet final</div><div class="rb-desc">Un restaurant pour toi 🍽️</div></div>
             <div class="reward-badge locked" id="rew-victoire5"><span class="rb-icon">⭐</span><div class="rb-name">5 victoires</div><div class="rb-desc">Petit mais costaud</div></div>
           </div>
           <div class="sec"><div class="sec-label">💬 Citations favorites</div><div class="sec-line"></div></div>
@@ -1915,6 +1915,8 @@ function saveSeance() {
   sessions.unshift(session);
   saveSessions(sessions);
   renderHistory();
+  // Increment flower counter + trigger rewards
+  onPomoComplete();
   // Reset for next session
   setSeanceStep(1);
   var objInput = document.getElementById("seance-obj");
