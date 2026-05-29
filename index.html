@@ -2025,33 +2025,45 @@ function onPomoComplete(){ totalPomos++; updateFlower(totalPomos,true); saveStat
 
 // STREAK
 var currentStreak=0;
-var streakTiers=[
-  {n:0,fire:"🌱",title:"Commence ta série aujourd'hui !",sub:"Ouvre le site chaque jour."},
-  {n:1,fire:"🔥",title:"Jour 1 — Le voyage commence !",sub:"Reviens demain."},
-  {n:3,fire:"🔥",title:"Streak x3 — Tu es dans le rythme !",sub:"3 jours de suite."},
-  {n:7,fire:"🔥🔥",title:"Une semaine complete !",sub:"Schatza, une semaine entiere."},
-  {n:14,fire:"🔥🔥🔥",title:"Deux semaines ! Tu es inarretable.",sub:"Le memoire ne sait plus ou se cacher."},
-  {n:30,fire:"🌟",title:"UN MOIS. Dr. Schatza is coming.",sub:"On fete ca comme il se doit."}
-];
-function initStreak(){
-  try{
-    var today=new Date().toDateString();
-    var raw=localStorage.getItem("schatza_streak");
-    var data=raw?JSON.parse(raw):{streak:0,lastVisit:null};
-    if(data.lastVisit===today){ currentStreak=data.streak; }
-    else if(data.lastVisit){ var diff=Math.round((new Date()-new Date(data.lastVisit))/86400000); currentStreak=diff===1?data.streak+1:1; }
-    else{ currentStreak=1; }
-    localStorage.setItem("schatza_streak",JSON.stringify({streak:currentStreak,lastVisit:today}));
-    renderStreak();
-  } catch(e){ console.warn("Streak error:",e); }
-}
+var streakSpecial = {
+  0:  {fire:"🌱", title:"Commence ta série aujourd'hui !", sub:"Ouvre le site chaque jour."},
+  1:  {fire:"🔥", title:"Jour 1 — Le voyage commence !",  sub:"Reviens demain pour continuer."},
+  3:  {fire:"🔥", title:"Série x3 — Tu es dans le rythme !", sub:"3 jours de suite. Continue !"},
+  7:  {fire:"🔥🔥", title:"Une semaine complète !", sub:"7 jours de suite. Impressionnant."},
+  14: {fire:"🔥🔥🔥", title:"Deux semaines !", sub:"Tu es inarrêtable."},
+  30: {fire:"🌟", title:"UN MOIS. Incroyable.", sub:"On fête ça."}
+};
+
 function renderStreak(){
-  var el=document.getElementById("streak-num"); var title=document.getElementById("streak-title");
-  var sub=document.getElementById("streak-sub"); var fire=document.getElementById("streak-fire");
+  var el=document.getElementById("streak-num");
+  var title=document.getElementById("streak-title");
+  var sub=document.getElementById("streak-sub");
+  var fire=document.getElementById("streak-fire");
   if(el) el.textContent=currentStreak;
-  var tier=streakTiers[0];
-  for(var i=streakTiers.length-1;i>=0;i--){ if(currentStreak>=streakTiers[i].n){ tier=streakTiers[i]; break; } }
-  if(title) title.textContent=tier.title; if(sub) sub.textContent=tier.sub; if(fire) fire.textContent=tier.fire;
+  var t,sb,f;
+  if(streakSpecial[currentStreak]){
+    t=streakSpecial[currentStreak].title;
+    sb=streakSpecial[currentStreak].sub;
+    f=streakSpecial[currentStreak].fire;
+  } else if(currentStreak>=30){
+    t=currentStreak+" jours. Dr. Schatza is coming.";
+    sb="Un mois et plus. Respect total."; f="🌟";
+  } else if(currentStreak>=14){
+    t=currentStreak+" jours de suite !";
+    sb="Deux semaines et plus. Tu es inarrêtable."; f="🔥🔥🔥";
+  } else if(currentStreak>=7){
+    t=currentStreak+" jours de suite !";
+    sb="Une semaine et plus. Impressionnant."; f="🔥🔥";
+  } else if(currentStreak>=2){
+    t=currentStreak+" jours de suite !";
+    sb="Continue comme ça."; f="🔥";
+  } else {
+    t="Commence ta série aujourd'hui !";
+    sb="Ouvre le site chaque jour."; f="🌱";
+  }
+  if(title) title.textContent=t;
+  if(sub) sub.textContent=sb;
+  if(fire) fire.textContent=f;
 }
 
 // HOME XP
